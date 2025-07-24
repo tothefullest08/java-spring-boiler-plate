@@ -1,4 +1,4 @@
-package harry.java_spring_boiler_plate;
+package harry.boilerplate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

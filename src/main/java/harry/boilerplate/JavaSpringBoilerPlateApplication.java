@@ -1,4 +1,4 @@
-package harry.java_spring_boiler_plate;
+package harry.boilerplate;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
