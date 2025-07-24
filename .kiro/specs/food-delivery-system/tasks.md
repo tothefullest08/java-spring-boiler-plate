@@ -6,7 +6,7 @@
   - _Requirements: 10.1, 10.2, 10.3, 10.4_
 
 - [ ] 2. Common 모듈 핵심 패턴 구현
-  - [ ] 2.1 도메인 기본 패턴 구현
+  - [x] 2.1 도메인 기본 패턴 구현
     - DomainEvent 인터페이스, AggregateRoot, ValueObject 기본 클래스 작성
     - BaseEntity 패턴과 JPA 공통 설정 구현
     - _Requirements: 9.5_
