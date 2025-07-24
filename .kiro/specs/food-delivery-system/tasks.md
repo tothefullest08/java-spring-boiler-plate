@@ -11,7 +11,7 @@
     - BaseEntity 패턴과 JPA 공통 설정 구현
     - _Requirements: 9.5_
   
-  - [ ] 2.2 에러 처리 패턴 구현
+  - [x] 2.2 에러 처리 패턴 구현
     - ErrorCode 인터페이스와 CommonSystemErrorCode enum 작성
     - DomainException, ApplicationException 기본 클래스 구현
     - GlobalExceptionHandler와 ErrorResponse 패턴 작성
