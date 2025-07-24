@@ -1,1 +1,6 @@
 rootProject.name = 'java-spring-boiler-plate'
+
+include 'domains:common'
+include 'domains:shop'
+include 'domains:order'
+include 'domains:user'
