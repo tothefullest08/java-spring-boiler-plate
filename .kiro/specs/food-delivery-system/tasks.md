@@ -29,13 +29,13 @@
     - Shop.isOpen() 메서드와 영업시간 조정 기능 구현
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
   
-  - [ ] 3.2 Menu 애그리게이트 구현
+  - [x] 3.2 Menu 애그리게이트 구현
     - Menu 엔티티와 MenuId ValueObject 작성
     - OptionGroup, Option ValueObject 구조 구현
     - Menu.open() 메서드와 공개 조건 검증 로직 구현
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
   
-  - [ ] 3.3 옵션 관리 비즈니스 로직 구현
+  - [x] 3.3 옵션 관리 비즈니스 로직 구현
     - Menu.addOptionGroup() 메서드와 중복 검증 로직 작성
     - Menu.changeOptionGroupName(), Menu.changeOptionName() 메서드 구현
     - 옵션그룹 삭제 시 최소 조건 보장 로직 구현
