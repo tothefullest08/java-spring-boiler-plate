@@ -17,7 +17,7 @@
     - GlobalExceptionHandler와 ErrorResponse 패턴 작성
     - _Requirements: 8.4, 8.5, 8.6_
   
-  - [ ] 2.3 공통 응답 패턴 구현
+  - [x] 2.3 공통 응답 패턴 구현
     - CommandResultResponse 클래스와 팩토리 메서드 구현
     - 공통 설정 클래스(PasswordEncoder, ObjectMapper) 작성
     - _Requirements: 9.1, 9.2_
