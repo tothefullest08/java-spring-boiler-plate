@@ -1,8 +1,10 @@
-package harry.boilerplate.common.domain;
+package harry.boilerplate.common.domain.entity;
 
 import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
+
+import harry.boilerplate.common.domain.event.DomainEvent;
 
 /**
  * DDD 애그리게이트 루트 기본 클래스

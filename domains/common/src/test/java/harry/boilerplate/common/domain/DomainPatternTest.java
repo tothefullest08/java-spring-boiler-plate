@@ -2,6 +2,10 @@ package harry.boilerplate.common.domain;
 
 import org.junit.jupiter.api.Test;
 
+import harry.boilerplate.common.domain.entity.AggregateRoot;
+import harry.boilerplate.common.domain.entity.ValueObject;
+import harry.boilerplate.common.domain.event.DomainEvent;
+
 import java.time.Instant;
 import java.util.UUID;
 

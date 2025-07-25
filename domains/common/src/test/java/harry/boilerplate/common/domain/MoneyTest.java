@@ -2,6 +2,8 @@ package harry.boilerplate.common.domain;
 
 import org.junit.jupiter.api.Test;
 
+import harry.boilerplate.common.domain.entity.Money;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 

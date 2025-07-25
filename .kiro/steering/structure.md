@@ -232,9 +232,12 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
 
 ## 공통 아키텍처 패턴 (필수)
 
-### Domain Event Pattern
+### Domain Event Pattern (필수)
+
+#### Common 패키지 - 아키텍처 패턴만 제공
 ```java
-// domains/common - 모든 도메인 이벤트가 구현해야 하는 인터페이스
+// domains/common/src/main/java/harry/boilerplate/common/domain/event/DomainEvent.java
+// ✅ 필수: 모든 도메인 이벤트가 구현해야 하는 인터페이스 (Common 패키지)
 public interface DomainEvent {
     UUID getEventId();
     Instant getOccurredAt();
@@ -242,8 +245,11 @@ public interface DomainEvent {
     String getAggregateType();
     int getVersion();
 }
+```
 
-// 사용 예시
+#### 각 바운디드 컨텍스트 - 구체적인 비즈니스 이벤트 구현
+```java
+// ✅ 올바른 위치: domains/order/src/main/java/harry/boilerplate/order/domain/event/OrderPlacedEvent.java
 public class OrderPlacedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();
@@ -251,10 +257,75 @@ public class OrderPlacedEvent implements DomainEvent {
     private final String aggregateType = "Order";
     private final int version = 1;
     
-    public OrderPlacedEvent(String orderId) {
+    private final String userId;
+    private final String shopId;
+    
+    public OrderPlacedEvent(String orderId, String userId, String shopId) {
         this.aggregateId = orderId;
+        this.userId = userId;
+        this.shopId = shopId;
     }
+    
+    // getters...
 }
+
+// ✅ 올바른 위치: domains/shop/src/main/java/harry/boilerplate/shop/domain/event/MenuOpenedEvent.java
+public class MenuOpenedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId;
+    private final String aggregateType = "Menu";
+    private final int version = 1;
+    
+    private final String shopId;
+    private final String menuName;
+    
+    public MenuOpenedEvent(String menuId, String shopId, String menuName) {
+        this.aggregateId = menuId;
+        this.shopId = shopId;
+        this.menuName = menuName;
+    }
+    
+    // getters...
+}
+```
+
+#### 도메인 이벤트 위치 규칙 (절대 준수)
+```
+✅ 올바른 구조:
+domains/
+├── common/                           # 아키텍처 패턴만
+│   └── domain/
+│       ├── entity/                   # 엔티티 관련 패턴
+│       │   ├── AggregateRoot.java
+│       │   ├── BaseEntity.java
+│       │   ├── ValueObject.java
+│       │   ├── EntityId.java
+│       │   └── Money.java
+│       └── event/                    # 도메인 이벤트 패턴
+│           └── DomainEvent.java     # 인터페이스만
+├── shop/                            # Shop Context 비즈니스 이벤트
+│   └── domain/
+│       └── event/
+│           ├── MenuOpenedEvent.java
+│           └── ShopClosedEvent.java
+├── order/                           # Order Context 비즈니스 이벤트
+│   └── domain/
+│       └── event/
+│           ├── OrderPlacedEvent.java
+│           └── CartItemAddedEvent.java
+└── user/                            # User Context 비즈니스 이벤트
+    └── domain/
+        └── event/
+            └── UserRegisteredEvent.java
+
+❌ 금지된 구조:
+domains/
+└── common/
+    └── domain/
+        └── event/                   # 구체적인 비즈니스 이벤트 금지!
+            ├── OrderPlacedEvent.java    # ❌ 바운디드 컨텍스트 위반
+            └── MenuOpenedEvent.java     # ❌ 의존성 격리 위반
 ```
 
 ### Error Handling Pattern (필수)
@@ -280,6 +351,7 @@ public abstract class DomainException extends RuntimeException {
 
 ### Base Entity Pattern (필수)
 ```java
+// domains/common/src/main/java/harry/boilerplate/common/domain/entity/BaseEntity.java
 // 모든 JPA 엔티티가 상속해야 하는 기본 클래스
 @MappedSuperclass
 public abstract class BaseEntity {

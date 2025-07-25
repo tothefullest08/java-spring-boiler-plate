@@ -1,4 +1,4 @@
-package harry.boilerplate.common.domain;
+package harry.boilerplate.common.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

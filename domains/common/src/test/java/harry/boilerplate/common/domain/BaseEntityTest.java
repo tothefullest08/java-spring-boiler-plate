@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.junit.jupiter.api.Test;
 
+import harry.boilerplate.common.domain.entity.BaseEntity;
+
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -341,9 +341,32 @@ CREATE TABLE user (
 
 ## 공통 아키텍처 패턴
 
+### Common 패키지 구조 (필수)
+```
+domains/common/src/main/java/harry/boilerplate/common/
+├── domain/
+│   ├── entity/                    # 엔티티 관련 아키텍처 패턴
+│   │   ├── AggregateRoot.java    # 애그리게이트 루트 기본 클래스
+│   │   ├── BaseEntity.java       # JPA 엔티티 공통 필드
+│   │   ├── ValueObject.java      # 값 객체 기본 클래스
+│   │   ├── EntityId.java         # 엔티티 ID 기본 클래스
+│   │   └── Money.java            # 금액 값 객체
+│   └── event/                     # 도메인 이벤트 패턴
+│       └── DomainEvent.java      # 도메인 이벤트 인터페이스
+├── exception/                     # 공통 예외 처리 패턴
+├── response/                      # 공통 응답 패턴
+└── config/                        # 공통 설정
+```
+
 ### Domain Event Pattern (필수)
+
+#### 바운디드 컨텍스트 격리 원칙
+- **Common 패키지**: 아키텍처 패턴(인터페이스)만 제공
+- **각 Context**: 구체적인 비즈니스 도메인 이벤트 구현
+
 ```java
-// domains/common/src/main/java/harry/boilerplate/common/domain/DomainEvent.java
+// ✅ Common 패키지: 아키텍처 패턴만
+// domains/common/src/main/java/harry/boilerplate/common/domain/event/DomainEvent.java
 public interface DomainEvent {
     UUID getEventId();
     Instant getOccurredAt();
@@ -352,7 +375,8 @@ public interface DomainEvent {
     int getVersion();
 }
 
-// 구현 예시
+// ✅ Order Context: 비즈니스 도메인 이벤트
+// domains/order/src/main/java/harry/boilerplate/order/domain/event/OrderPlacedEvent.java
 public class OrderPlacedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();
@@ -360,11 +384,70 @@ public class OrderPlacedEvent implements DomainEvent {
     private final String aggregateType = "Order";
     private final int version = 1;
     
-    public OrderPlacedEvent(String orderId) {
+    // 비즈니스 데이터
+    private final String userId;
+    private final String shopId;
+    private final BigDecimal totalAmount;
+    
+    public OrderPlacedEvent(String orderId, String userId, String shopId, BigDecimal totalAmount) {
         this.aggregateId = orderId;
+        this.userId = userId;
+        this.shopId = shopId;
+        this.totalAmount = totalAmount;
     }
     
     // getters...
+}
+
+// ✅ Shop Context: 비즈니스 도메인 이벤트
+// domains/shop/src/main/java/harry/boilerplate/shop/domain/event/MenuOpenedEvent.java
+public class MenuOpenedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId;
+    private final String aggregateType = "Menu";
+    private final int version = 1;
+    
+    // 비즈니스 데이터
+    private final String shopId;
+    private final String menuName;
+    
+    public MenuOpenedEvent(String menuId, String shopId, String menuName) {
+        this.aggregateId = menuId;
+        this.shopId = shopId;
+        this.menuName = menuName;
+    }
+    
+    // getters...
+}
+```
+
+#### 도메인 이벤트 사용 규칙 (필수)
+```java
+// ✅ 애그리게이트에서 이벤트 발행
+public class Order extends AggregateRoot<Order, OrderId> {
+    public void place() {
+        // 비즈니스 로직 수행
+        this.status = OrderStatus.PLACED;
+        this.orderTime = LocalDateTime.now();
+        
+        // 도메인 이벤트 발행
+        addDomainEvent(new OrderPlacedEvent(
+            this.getId().getValue(),
+            this.userId.getValue(),
+            this.shopId.getValue(),
+            this.totalPrice.getAmount()
+        ));
+    }
+}
+
+// ✅ 이벤트 핸들러에서 처리
+@EventHandler
+public class OrderPlacedEventHandler {
+    public void handle(OrderPlacedEvent event) {
+        // 다른 바운디드 컨텍스트에 알림
+        // 예: 재고 차감, 알림 발송 등
+    }
 }
 ```
 
@@ -427,6 +510,7 @@ public abstract class ApplicationException extends RuntimeException {
 
 ### Base Entity Pattern (필수)
 ```java
+// domains/common/src/main/java/harry/boilerplate/common/domain/entity/BaseEntity.java
 // JPA 엔티티 공통 필드
 @MappedSuperclass
 public abstract class BaseEntity {

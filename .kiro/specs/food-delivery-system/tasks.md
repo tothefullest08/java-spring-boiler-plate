@@ -41,26 +41,39 @@
     - 옵션그룹 삭제 시 최소 조건 보장 로직 구현
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 4. Shop Context 도메인 예외 처리 구현
+- [ ] 4. Shop Context 도메인 이벤트 구현
+  - [ ] 4.1 Shop Context 도메인 이벤트 작성
+    - MenuOpenedEvent 도메인 이벤트 클래스 구현
+    - ShopClosedEvent 도메인 이벤트 클래스 구현
+    - 각 이벤트에 필요한 비즈니스 데이터 포함
+    - _Requirements: 2.3, 1.5_
+  
+  - [ ] 4.2 애그리게이트에서 도메인 이벤트 발행
+    - Menu.open() 메서드에서 MenuOpenedEvent 발행 로직 추가
+    - Shop 영업 종료 시 ShopClosedEvent 발행 로직 추가
+    - AggregateRoot.addDomainEvent() 메서드 활용
+    - _Requirements: 2.3, 1.5_
+
+- [ ] 5. Shop Context 도메인 예외 처리 구현
   - ShopErrorCode, MenuErrorCode enum 작성
   - ShopDomainException, MenuDomainException 클래스 구현
   - 각 비즈니스 규칙 위반 시 적절한 예외 발생 로직 추가
   - _Requirements: 1.5, 2.4, 3.1, 3.2, 3.4_
 
-- [ ] 5. Shop Context 인프라스트럭처 레이어 구현
-  - [ ] 5.1 JPA 엔티티 매핑 구현
+- [ ] 6. Shop Context 인프라스트럭처 레이어 구현
+  - [ ] 6.1 JPA 엔티티 매핑 구현
     - Shop, Menu JPA 엔티티 클래스 작성 (BaseEntity 상속)
     - OptionGroup, Option 임베디드 매핑 구현
     - 데이터베이스 테이블과 엔티티 매핑 설정
     - _Requirements: 10.5_
   
-  - [ ] 5.2 Command Repository 구현
+  - [ ] 6.2 Command Repository 구현
     - ShopRepository, MenuRepository 인터페이스 정의
     - ShopRepositoryImpl, MenuRepositoryImpl JPA 구현체 작성
     - EntityManager 기반 CRUD 작업 구현
     - _Requirements: 9.1, 9.3_
   
-  - [ ] 5.3 Query DAO 구현
+  - [ ] 6.3 Query DAO 구현
     - ShopQueryDao, MenuQueryDao 인터페이스 정의
     - 읽기 최적화된 쿼리 메서드 구현 (EntityManager 직접 사용)
     - Read Model 매핑 로직 구현
@@ -117,26 +130,39 @@
     - Cart.getTotalPrice() 메서드에서 Money 타입 반환 구현
     - _Requirements: 5.5, 6.3_
 
-- [ ] 9. Order Context 외부 API 연동 구현
-  - [ ] 9.1 Shop API Client 구현
+- [ ] 9. Order Context 도메인 이벤트 구현
+  - [ ] 9.1 Order Context 도메인 이벤트 작성
+    - OrderPlacedEvent 도메인 이벤트 클래스 구현
+    - CartItemAddedEvent 도메인 이벤트 클래스 구현
+    - 각 이벤트에 필요한 비즈니스 데이터 포함
+    - _Requirements: 6.1, 5.1_
+  
+  - [ ] 9.2 애그리게이트에서 도메인 이벤트 발행
+    - Order.from() 메서드에서 OrderPlacedEvent 발행 로직 추가
+    - Cart.addItem() 메서드에서 CartItemAddedEvent 발행 로직 추가
+    - AggregateRoot.addDomainEvent() 메서드 활용
+    - _Requirements: 6.1, 5.1_
+
+- [ ] 10. Order Context 외부 API 연동 구현
+  - [ ] 10.1 Shop API Client 구현
     - ShopApiClient 인터페이스 정의
     - RestTemplate 기반 Shop Context API 호출 구현
     - 가게 영업 상태 확인, 메뉴 정보 조회 기능 구현
     - _Requirements: 8.1, 8.2, 8.3, 5.3_
   
-  - [ ] 9.2 User API Client 구현
+  - [ ] 10.2 User API Client 구현
     - UserApiClient 인터페이스 정의
     - 사용자 유효성 검증 API 호출 구현
     - _Requirements: 8.4, 5.6_
 
-- [ ] 10. Order Context 도메인 예외 처리 구현
+- [ ] 11. Order Context 도메인 예외 처리 구현
   - CartErrorCode, OrderErrorCode enum 작성
   - CartDomainException, OrderDomainException 클래스 구현
   - 장바구니 및 주문 비즈니스 규칙 위반 시 예외 처리 로직 추가
   - _Requirements: 5.6, 6.4_
 
-- [ ] 11. Order Context 인프라스트럭처 레이어 구현
-  - [ ] 11.1 JPA 엔티티 매핑 구현
+- [ ] 12. Order Context 인프라스트럭처 레이어 구현
+  - [ ] 12.1 JPA 엔티티 매핑 구현
     - Cart, Order JPA 엔티티 클래스 작성
     - CartLineItem, OrderLineItem 임베디드 매핑 구현
     - 선택된 옵션 정보 저장 구조 구현

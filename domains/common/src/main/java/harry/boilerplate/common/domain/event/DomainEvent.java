@@ -1,4 +1,4 @@
-package harry.boilerplate.common.domain;
+package harry.boilerplate.common.domain.event;
 
 import java.time.Instant;
 import java.util.UUID;

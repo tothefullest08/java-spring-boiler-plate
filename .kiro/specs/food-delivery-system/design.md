@@ -330,6 +330,161 @@ public interface UserApiClient {
 }
 ```
 
+#### Domain Event Communication
+
+각 바운디드 컨텍스트는 중요한 비즈니스 이벤트를 도메인 이벤트로 발행하여 다른 컨텍스트에 알립니다.
+
+##### Shop Context Domain Events
+```java
+// domains/shop/src/main/java/harry/boilerplate/shop/domain/event/MenuOpenedEvent.java
+public class MenuOpenedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId; // menuId
+    private final String aggregateType = "Menu";
+    private final int version = 1;
+    
+    private final String shopId;
+    private final String menuName;
+    
+    public MenuOpenedEvent(String menuId, String shopId, String menuName) {
+        this.aggregateId = menuId;
+        this.shopId = shopId;
+        this.menuName = menuName;
+    }
+    
+    // getters...
+}
+
+// domains/shop/src/main/java/harry/boilerplate/shop/domain/event/ShopClosedEvent.java
+public class ShopClosedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId; // shopId
+    private final String aggregateType = "Shop";
+    private final int version = 1;
+    
+    private final String shopName;
+    private final String reason;
+    
+    public ShopClosedEvent(String shopId, String shopName, String reason) {
+        this.aggregateId = shopId;
+        this.shopName = shopName;
+        this.reason = reason;
+    }
+    
+    // getters...
+}
+```
+
+##### Order Context Domain Events
+```java
+// domains/order/src/main/java/harry/boilerplate/order/domain/event/OrderPlacedEvent.java
+public class OrderPlacedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId; // orderId
+    private final String aggregateType = "Order";
+    private final int version = 1;
+    
+    private final String userId;
+    private final String shopId;
+    private final BigDecimal totalAmount;
+    
+    public OrderPlacedEvent(String orderId, String userId, String shopId, BigDecimal totalAmount) {
+        this.aggregateId = orderId;
+        this.userId = userId;
+        this.shopId = shopId;
+        this.totalAmount = totalAmount;
+    }
+    
+    // getters...
+}
+
+// domains/order/src/main/java/harry/boilerplate/order/domain/event/CartItemAddedEvent.java
+public class CartItemAddedEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId; // cartId
+    private final String aggregateType = "Cart";
+    private final int version = 1;
+    
+    private final String userId;
+    private final String menuId;
+    private final int quantity;
+    
+    public CartItemAddedEvent(String cartId, String userId, String menuId, int quantity) {
+        this.aggregateId = cartId;
+        this.userId = userId;
+        this.menuId = menuId;
+        this.quantity = quantity;
+    }
+    
+    // getters...
+}
+```
+
+##### User Context Domain Events
+```java
+// domains/user/src/main/java/harry/boilerplate/user/domain/event/UserRegisteredEvent.java
+public class UserRegisteredEvent implements DomainEvent {
+    private final UUID eventId = UUID.randomUUID();
+    private final Instant occurredAt = Instant.now();
+    private final String aggregateId; // userId
+    private final String aggregateType = "User";
+    private final int version = 1;
+    
+    private final String userName;
+    private final String email;
+    
+    public UserRegisteredEvent(String userId, String userName, String email) {
+        this.aggregateId = userId;
+        this.userName = userName;
+        this.email = email;
+    }
+    
+    // getters...
+}
+```
+
+##### Domain Event Usage in Aggregates
+```java
+// Shop Context - Menu Aggregate
+public class Menu extends AggregateRoot<Menu, MenuId> {
+    public void open() {
+        // 비즈니스 규칙 검증
+        validateOpenConditions();
+        
+        // 상태 변경
+        this.isOpen = true;
+        
+        // 도메인 이벤트 발행
+        addDomainEvent(new MenuOpenedEvent(
+            this.getId().getValue(),
+            this.shopId.getValue(),
+            this.name
+        ));
+    }
+}
+
+// Order Context - Order Aggregate
+public class Order extends AggregateRoot<Order, OrderId> {
+    public static Order from(Cart cart) {
+        Order order = new Order(cart.getUserId(), cart.getShopId(), cart.getItems());
+        
+        // 도메인 이벤트 발행
+        order.addDomainEvent(new OrderPlacedEvent(
+            order.getId().getValue(),
+            order.getUserId().getValue(),
+            order.getShopId().getValue(),
+            order.getTotalPrice().getAmount()
+        ));
+        
+        return order;
+    }
+}
+```
+
 ## Data Models
 
 ### Database Schema Design

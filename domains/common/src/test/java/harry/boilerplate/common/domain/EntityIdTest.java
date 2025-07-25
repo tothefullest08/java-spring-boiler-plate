@@ -2,6 +2,8 @@ package harry.boilerplate.common.domain;
 
 import org.junit.jupiter.api.Test;
 
+import harry.boilerplate.common.domain.entity.EntityId;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

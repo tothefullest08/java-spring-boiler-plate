@@ -1,4 +1,4 @@
-package harry.boilerplate.common.domain;
+package harry.boilerplate.common.domain.entity;
 
 import java.util.Objects;
 import java.util.UUID;
