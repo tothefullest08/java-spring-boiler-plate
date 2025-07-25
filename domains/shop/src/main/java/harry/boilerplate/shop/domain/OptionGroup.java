@@ -35,10 +35,10 @@ public class OptionGroup extends ValueObject {
     
     public OptionGroup(OptionGroupId id, String name, boolean required) {
         if (id == null) {
-            throw new IllegalArgumentException("옵션그룹 ID는 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("옵션그룹 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
         
         this.id = id.getValue();
@@ -59,7 +59,7 @@ public class OptionGroup extends ValueObject {
      */
     public OptionGroup addOption(Option option) {
         if (option == null) {
-            throw new IllegalArgumentException("옵션은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_REQUIRED);
         }
         
         // 중복 옵션 확인 (이름과 가격이 모두 같은 경우)
@@ -69,7 +69,7 @@ public class OptionGroup extends ValueObject {
                 existingOption.getPrice().equals(option.getPrice()));
         
         if (exists) {
-            throw new IllegalArgumentException("동일한 이름과 가격의 옵션이 이미 존재합니다: " + option.getName());
+            throw new MenuDomainException(MenuErrorCode.DUPLICATE_OPTION_GROUP_NAME);
         }
         
         List<Option> newOptions = new ArrayList<>(this.options);
@@ -83,10 +83,10 @@ public class OptionGroup extends ValueObject {
      */
     public OptionGroup removeOption(String optionName, Money optionPrice) {
         if (optionName == null || optionName.trim().isEmpty()) {
-            throw new IllegalArgumentException("옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
         if (optionPrice == null) {
-            throw new IllegalArgumentException("옵션 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         
         List<Option> newOptions = options.stream()
@@ -95,7 +95,7 @@ public class OptionGroup extends ValueObject {
             .collect(Collectors.toList());
         
         if (newOptions.size() == options.size()) {
-            throw new IllegalArgumentException("제거할 옵션을 찾을 수 없습니다: " + optionName);
+            throw new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND);
         }
         
         return new OptionGroup(new OptionGroupId(this.id), this.name, this.required, newOptions);
@@ -106,7 +106,7 @@ public class OptionGroup extends ValueObject {
      */
     public OptionGroup changeName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("새로운 옵션그룹 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
         
         return new OptionGroup(new OptionGroupId(this.id), newName, this.required, this.options);
@@ -117,13 +117,13 @@ public class OptionGroup extends ValueObject {
      */
     public OptionGroup changeOptionName(String currentName, Money currentPrice, String newName) {
         if (currentName == null || currentName.trim().isEmpty()) {
-            throw new IllegalArgumentException("현재 옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
         if (currentPrice == null) {
-            throw new IllegalArgumentException("현재 옵션 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("새로운 옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
         
         List<Option> newOptions = options.stream()
@@ -139,7 +139,7 @@ public class OptionGroup extends ValueObject {
         // 변경된 옵션이 있는지 확인
         boolean changed = !newOptions.equals(options);
         if (!changed) {
-            throw new IllegalArgumentException("변경할 옵션을 찾을 수 없습니다: " + currentName);
+            throw new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND);
         }
         
         return new OptionGroup(new OptionGroupId(this.id), this.name, this.required, newOptions);

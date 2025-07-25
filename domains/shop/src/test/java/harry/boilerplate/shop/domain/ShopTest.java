@@ -80,15 +80,110 @@ class ShopTest {
         
         // When & Then
         assertThatThrownBy(() -> shop.close(null))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("영업 종료 사유는 필수입니다");
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.CLOSE_REASON_REQUIRED);
             
         assertThatThrownBy(() -> shop.close(""))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("영업 종료 사유는 필수입니다");
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.CLOSE_REASON_REQUIRED);
             
         assertThatThrownBy(() -> shop.close("   "))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("영업 종료 사유는 필수입니다");
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.CLOSE_REASON_REQUIRED);
+    }
+    
+    @Test
+    void Shop_생성_시_이름_null_또는_빈문자열_예외() {
+        // Given
+        Money minOrderAmount = Money.of("15000");
+        BusinessHours businessHours = new BusinessHours(
+            LocalTime.of(9, 0), 
+            LocalTime.of(22, 0)
+        );
+        
+        // When & Then
+        assertThatThrownBy(() -> new Shop(null, minOrderAmount, businessHours))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.SHOP_NAME_REQUIRED);
+            
+        assertThatThrownBy(() -> new Shop("", minOrderAmount, businessHours))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.SHOP_NAME_REQUIRED);
+            
+        assertThatThrownBy(() -> new Shop("   ", minOrderAmount, businessHours))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.SHOP_NAME_REQUIRED);
+    }
+    
+    @Test
+    void Shop_생성_시_최소주문금액_음수_예외() {
+        // Given
+        String name = "맛있는 식당";
+        Money invalidMinOrderAmount = Money.of("-1000");
+        BusinessHours businessHours = new BusinessHours(
+            LocalTime.of(9, 0), 
+            LocalTime.of(22, 0)
+        );
+        
+        // When & Then
+        assertThatThrownBy(() -> new Shop(name, invalidMinOrderAmount, businessHours))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_MIN_ORDER_AMOUNT);
+    }
+    
+    @Test
+    void 영업시간_조정_시_잘못된_시간_예외() {
+        // Given
+        BusinessHours businessHours = new BusinessHours(
+            LocalTime.of(9, 0), 
+            LocalTime.of(22, 0)
+        );
+        Shop shop = new Shop("테스트 식당", Money.of("10000"), businessHours);
+        
+        // When & Then - null 시간
+        assertThatThrownBy(() -> shop.adjustBusinessHours(null, LocalTime.of(22, 0)))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_OPERATING_HOURS);
+            
+        assertThatThrownBy(() -> shop.adjustBusinessHours(LocalTime.of(9, 0), null))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_OPERATING_HOURS);
+            
+        // When & Then - 시작시간이 종료시간보다 늦은 경우
+        assertThatThrownBy(() -> shop.adjustBusinessHours(LocalTime.of(22, 0), LocalTime.of(9, 0)))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_OPERATING_HOURS);
+            
+        // When & Then - 시작시간과 종료시간이 같은 경우
+        assertThatThrownBy(() -> shop.adjustBusinessHours(LocalTime.of(9, 0), LocalTime.of(9, 0)))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_OPERATING_HOURS);
+    }
+    
+    @Test
+    void 최소주문금액_변경_시_음수_예외() {
+        // Given
+        BusinessHours businessHours = new BusinessHours(
+            LocalTime.of(9, 0), 
+            LocalTime.of(22, 0)
+        );
+        Shop shop = new Shop("테스트 식당", Money.of("10000"), businessHours);
+        
+        // When & Then
+        assertThatThrownBy(() -> shop.changeMinOrderAmount(Money.of("-5000")))
+            .isInstanceOf(ShopDomainException.class)
+            .extracting(e -> ((ShopDomainException) e).getErrorCode())
+            .isEqualTo(ShopErrorCode.INVALID_MIN_ORDER_AMOUNT);
     }
 }

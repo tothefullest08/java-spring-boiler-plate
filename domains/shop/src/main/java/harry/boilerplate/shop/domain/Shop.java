@@ -37,8 +37,15 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
     }
 
     public Shop(String name, Money minOrderAmount, BusinessHours businessHours) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new ShopDomainException(ShopErrorCode.SHOP_NAME_REQUIRED);
+        }
+        if (minOrderAmount != null && minOrderAmount.getAmount().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ShopDomainException(ShopErrorCode.INVALID_MIN_ORDER_AMOUNT);
+        }
+
         this.id = UUID.randomUUID().toString();
-        this.name = name;
+        this.name = name.trim();
         this.minOrderAmount = minOrderAmount != null ? minOrderAmount.getAmount() : null;
         this.businessHours = businessHours;
     }
@@ -72,6 +79,13 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
      * 영업시간 조정
      */
     public void adjustBusinessHours(LocalTime openTime, LocalTime closeTime) {
+        if (openTime == null || closeTime == null) {
+            throw new ShopDomainException(ShopErrorCode.INVALID_OPERATING_HOURS);
+        }
+        if (openTime.isAfter(closeTime) || openTime.equals(closeTime)) {
+            throw new ShopDomainException(ShopErrorCode.INVALID_OPERATING_HOURS);
+        }
+
         this.businessHours = new BusinessHours(openTime, closeTime);
     }
 
@@ -79,6 +93,10 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
      * 최소 주문 금액 변경
      */
     public void changeMinOrderAmount(Money newMinOrderAmount) {
+        if (newMinOrderAmount != null && newMinOrderAmount.getAmount().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new ShopDomainException(ShopErrorCode.INVALID_MIN_ORDER_AMOUNT);
+        }
+
         this.minOrderAmount = newMinOrderAmount != null ? newMinOrderAmount.getAmount() : null;
     }
 
@@ -88,7 +106,7 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
      */
     public void close(String reason) {
         if (reason == null || reason.trim().isEmpty()) {
-            throw new IllegalArgumentException("영업 종료 사유는 필수입니다");
+            throw new ShopDomainException(ShopErrorCode.CLOSE_REASON_REQUIRED);
         }
 
         // 도메인 이벤트 발행 (Requirements 1.5)

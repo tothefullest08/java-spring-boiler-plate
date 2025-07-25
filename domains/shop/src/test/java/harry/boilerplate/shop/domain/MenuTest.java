@@ -2,7 +2,7 @@ package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.common.domain.event.DomainEvent;
-import harry.boilerplate.shop.domain.Menu.MenuDomainException;
+
 import harry.boilerplate.shop.domain.event.MenuOpenedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,8 +65,9 @@ class MenuTest {
         void 가게ID_null_예외() {
             // When & Then
             assertThatThrownBy(() -> new Menu(null, "삼겹살", "맛있는 삼겹살", Money.of(new BigDecimal("15000"))))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("가게 ID는 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.SHOP_ID_REQUIRED);
         }
 
         @Test
@@ -74,16 +75,19 @@ class MenuTest {
         void 메뉴이름_null_또는_빈문자열_예외() {
             // When & Then
             assertThatThrownBy(() -> new Menu(shopId, null, "설명", Money.of(new BigDecimal("15000"))))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("메뉴 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.MENU_NAME_REQUIRED);
 
             assertThatThrownBy(() -> new Menu(shopId, "", "설명", Money.of(new BigDecimal("15000"))))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("메뉴 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.MENU_NAME_REQUIRED);
 
             assertThatThrownBy(() -> new Menu(shopId, "   ", "설명", Money.of(new BigDecimal("15000"))))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("메뉴 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.MENU_NAME_REQUIRED);
         }
 
         @Test
@@ -91,12 +95,14 @@ class MenuTest {
         void 기본가격_null_또는_음수_예외() {
             // When & Then
             assertThatThrownBy(() -> new Menu(shopId, "삼겹살", "설명", null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기본 가격은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.BASE_PRICE_REQUIRED);
 
             assertThatThrownBy(() -> new Menu(shopId, "삼겹살", "설명", Money.of(new BigDecimal("-1000"))))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기본 가격은 0 이상이어야 합니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.INVALID_BASE_PRICE);
         }
     }
 
@@ -371,8 +377,9 @@ class MenuTest {
 
             // When & Then - 존재하지 않는 옵션 이름으로 변경 시도
             assertThatThrownBy(() -> menu.changeOptionName(groupId, "존재하지않는옵션", Money.of(new BigDecimal("1000")), "새이름"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("변경할 옵션을 찾을 수 없습니다: 존재하지않는옵션");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.OPTION_NOT_FOUND);
         }
 
         @Test

@@ -2,7 +2,6 @@ package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.common.exception.DomainException;
 import harry.boilerplate.shop.domain.event.MenuOpenedEvent;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -49,16 +48,16 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
 
     public Menu(ShopId shopId, String name, String description, Money basePrice) {
         if (shopId == null) {
-            throw new IllegalArgumentException("가게 ID는 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.SHOP_ID_REQUIRED);
         }
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("메뉴 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.MENU_NAME_REQUIRED);
         }
         if (basePrice == null) {
-            throw new IllegalArgumentException("기본 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.BASE_PRICE_REQUIRED);
         }
         if (basePrice.getAmount().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("기본 가격은 0 이상이어야 합니다");
+            throw new MenuDomainException(MenuErrorCode.INVALID_BASE_PRICE);
         }
 
         this.id = UUID.randomUUID().toString();
@@ -130,7 +129,7 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
      */
     public void addOptionGroup(OptionGroup optionGroup) {
         if (optionGroup == null) {
-            throw new IllegalArgumentException("옵션그룹은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_REQUIRED);
         }
 
         // 동일한 이름의 옵션그룹 존재 확인
@@ -161,10 +160,10 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
      */
     public void changeOptionGroupName(OptionGroupId optionGroupId, String newName) {
         if (optionGroupId == null) {
-            throw new IllegalArgumentException("옵션그룹 ID는 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("새로운 옵션그룹 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
 
         // 옵션그룹 찾기
@@ -190,16 +189,16 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
      */
     public void changeOptionName(OptionGroupId optionGroupId, String currentName, Money currentPrice, String newName) {
         if (optionGroupId == null) {
-            throw new IllegalArgumentException("옵션그룹 ID는 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
         if (currentName == null || currentName.trim().isEmpty()) {
-            throw new IllegalArgumentException("현재 옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
         if (currentPrice == null) {
-            throw new IllegalArgumentException("현재 옵션 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("새로운 옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
 
         // 옵션그룹 찾기
@@ -216,7 +215,7 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
      */
     public void removeOptionGroup(OptionGroupId optionGroupId) {
         if (optionGroupId == null) {
-            throw new IllegalArgumentException("옵션그룹 ID는 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
 
         // 옵션그룹 찾기
@@ -309,20 +308,5 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
         return new ArrayList<>(optionGroups);
     }
 
-    /**
-     * Menu 도메인 예외
-     */
-    public static class MenuDomainException extends DomainException {
-        private final MenuErrorCode errorCode;
 
-        public MenuDomainException(MenuErrorCode errorCode) {
-            super(errorCode.getMessage(), null);
-            this.errorCode = errorCode;
-        }
-
-        @Override
-        public MenuErrorCode getErrorCode() {
-            return errorCode;
-        }
-    }
 }

@@ -54,7 +54,7 @@
     - AggregateRoot.addDomainEvent() 메서드 활용
     - _Requirements: 2.3, 1.5_
 
-- [ ] 5. Shop Context 도메인 예외 처리 구현
+- [x] 5. Shop Context 도메인 예외 처리 구현
   - ShopErrorCode, MenuErrorCode enum 작성
   - ShopDomainException, MenuDomainException 클래스 구현
   - 각 비즈니스 규칙 위반 시 적절한 예외 발생 로직 추가

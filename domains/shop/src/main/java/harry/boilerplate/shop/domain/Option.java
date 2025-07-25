@@ -26,13 +26,13 @@ public class Option extends ValueObject {
     
     public Option(String name, Money price) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
         if (price == null) {
-            throw new IllegalArgumentException("옵션 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         if (price.getAmount().compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("옵션 가격은 0 이상이어야 합니다");
+            throw new MenuDomainException(MenuErrorCode.INVALID_BASE_PRICE);
         }
         
         this.name = name.trim();
@@ -44,7 +44,7 @@ public class Option extends ValueObject {
      */
     public Option changeName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("새로운 옵션 이름은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
         return new Option(newName, Money.of(this.price));
     }
@@ -54,7 +54,7 @@ public class Option extends ValueObject {
      */
     public Option changePrice(Money newPrice) {
         if (newPrice == null) {
-            throw new IllegalArgumentException("새로운 옵션 가격은 필수입니다");
+            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         return new Option(this.name, newPrice);
     }

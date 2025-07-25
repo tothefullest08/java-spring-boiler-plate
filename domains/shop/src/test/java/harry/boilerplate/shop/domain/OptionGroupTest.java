@@ -50,8 +50,9 @@ class OptionGroupTest {
         void 옵션그룹ID_null_예외() {
             // When & Then
             assertThatThrownBy(() -> new OptionGroup(null, "양 선택", true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("옵션그룹 ID는 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
 
         @Test
@@ -59,16 +60,19 @@ class OptionGroupTest {
         void 옵션그룹이름_null_또는_빈문자열_예외() {
             // When & Then
             assertThatThrownBy(() -> new OptionGroup(optionGroupId, null, true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("옵션그룹 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
 
             assertThatThrownBy(() -> new OptionGroup(optionGroupId, "", true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("옵션그룹 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
 
             assertThatThrownBy(() -> new OptionGroup(optionGroupId, "   ", true))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("옵션그룹 이름은 필수입니다");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
     }
 
@@ -97,8 +101,9 @@ class OptionGroupTest {
 
             // When & Then
             assertThatThrownBy(() -> groupWithOption.addOption(paidOption))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("동일한 이름과 가격의 옵션이 이미 존재합니다: 곱빼기");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.DUPLICATE_OPTION_GROUP_NAME);
         }
 
         @Test
@@ -123,8 +128,9 @@ class OptionGroupTest {
 
             // When & Then
             assertThatThrownBy(() -> groupWithOption.removeOption("존재하지않는옵션", Money.zero()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("제거할 옵션을 찾을 수 없습니다: 존재하지않는옵션");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.OPTION_NOT_FOUND);
         }
 
         @Test
@@ -164,8 +170,9 @@ class OptionGroupTest {
 
             // When & Then
             assertThatThrownBy(() -> groupWithOption.changeOptionName("존재하지않는옵션", Money.zero(), "새이름"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("변경할 옵션을 찾을 수 없습니다: 존재하지않는옵션");
+                .isInstanceOf(MenuDomainException.class)
+                .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                .isEqualTo(MenuErrorCode.OPTION_NOT_FOUND);
         }
     }
 
