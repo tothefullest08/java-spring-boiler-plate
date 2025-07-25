@@ -23,7 +23,7 @@
     - _Requirements: 9.1, 9.2_
 
 - [ ] 3. Shop Context 도메인 모델 구현
-  - [ ] 3.1 Shop 애그리게이트 구현
+  - [x] 3.1 Shop 애그리게이트 구현
     - Shop 엔티티와 ShopId ValueObject 작성
     - BusinessHours ValueObject와 영업시간 관리 로직 구현
     - Shop.isOpen() 메서드와 영업시간 조정 기능 구현
