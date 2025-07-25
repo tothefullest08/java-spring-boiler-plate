@@ -3,6 +3,7 @@ package harry.boilerplate.shop.domain;
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.common.exception.DomainException;
+import harry.boilerplate.shop.domain.event.MenuOpenedEvent;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -85,6 +86,14 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
 
         validateOpenConditions();
         this.open = true;
+        
+        // 도메인 이벤트 발행 (Requirements 2.3)
+        addDomainEvent(new MenuOpenedEvent(
+            this.id,
+            this.shopId,
+            this.name,
+            this.description
+        ));
     }
 
     /**

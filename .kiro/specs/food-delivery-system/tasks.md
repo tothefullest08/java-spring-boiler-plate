@@ -41,14 +41,14 @@
     - 옵션그룹 삭제 시 최소 조건 보장 로직 구현
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 4. Shop Context 도메인 이벤트 구현
-  - [ ] 4.1 Shop Context 도메인 이벤트 작성
+- [x] 4. Shop Context 도메인 이벤트 구현
+  - [x] 4.1 Shop Context 도메인 이벤트 작성
     - MenuOpenedEvent 도메인 이벤트 클래스 구현
     - ShopClosedEvent 도메인 이벤트 클래스 구현
     - 각 이벤트에 필요한 비즈니스 데이터 포함
     - _Requirements: 2.3, 1.5_
   
-  - [ ] 4.2 애그리게이트에서 도메인 이벤트 발행
+  - [x] 4.2 애그리게이트에서 도메인 이벤트 발행
     - Menu.open() 메서드에서 MenuOpenedEvent 발행 로직 추가
     - Shop 영업 종료 시 ShopClosedEvent 발행 로직 추가
     - AggregateRoot.addDomainEvent() 메서드 활용

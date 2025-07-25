@@ -2,6 +2,7 @@ package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.shop.domain.event.ShopClosedEvent;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -79,6 +80,23 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
      */
     public void changeMinOrderAmount(Money newMinOrderAmount) {
         this.minOrderAmount = newMinOrderAmount != null ? newMinOrderAmount.getAmount() : null;
+    }
+
+    /**
+     * 가게 영업 종료
+     * Requirements 1.5: 가게 영업 상태 변경 시 이벤트 발행
+     */
+    public void close(String reason) {
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new IllegalArgumentException("영업 종료 사유는 필수입니다");
+        }
+
+        // 도메인 이벤트 발행 (Requirements 1.5)
+        addDomainEvent(new ShopClosedEvent(
+            this.id,
+            this.name,
+            reason.trim()
+        ));
     }
 
     // Getters

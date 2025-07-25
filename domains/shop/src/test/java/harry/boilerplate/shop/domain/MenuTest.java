@@ -1,7 +1,9 @@
 package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.common.domain.event.DomainEvent;
 import harry.boilerplate.shop.domain.Menu.MenuDomainException;
+import harry.boilerplate.shop.domain.event.MenuOpenedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -113,6 +115,28 @@ class MenuTest {
 
             // Then
             assertThat(menu.isOpen()).isTrue();
+        }
+
+        @Test
+        @DisplayName("메뉴 공개 시 MenuOpenedEvent 도메인 이벤트 발행")
+        void 메뉴_공개_시_도메인_이벤트_발행() {
+            // Given
+            menu.addOptionGroup(requiredPaidOptionGroup);
+
+            // When
+            menu.open();
+
+            // Then
+            assertThat(menu.getDomainEvents()).hasSize(1);
+            DomainEvent event = menu.getDomainEvents().get(0);
+            assertThat(event).isInstanceOf(MenuOpenedEvent.class);
+            
+            MenuOpenedEvent menuOpenedEvent = (MenuOpenedEvent) event;
+            assertThat(menuOpenedEvent.getAggregateId()).isEqualTo(menu.getId().getValue());
+            assertThat(menuOpenedEvent.getAggregateType()).isEqualTo("Menu");
+            assertThat(menuOpenedEvent.getShopId()).isEqualTo(menu.getShopId().getValue());
+            assertThat(menuOpenedEvent.getMenuName()).isEqualTo(menu.getName());
+            assertThat(menuOpenedEvent.getDescription()).isEqualTo(menu.getDescription());
         }
 
         @Test
