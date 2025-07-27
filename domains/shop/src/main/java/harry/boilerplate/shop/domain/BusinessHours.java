@@ -12,13 +12,14 @@ import java.util.Objects;
 @Embeddable
 public class BusinessHours extends ValueObject {
 
-    private final LocalTime openTime;
-    private final LocalTime closeTime;
+    @jakarta.persistence.Column(name = "open_time")
+    private LocalTime openTime;
+    
+    @jakarta.persistence.Column(name = "close_time")
+    private LocalTime closeTime;
 
     protected BusinessHours() {
         // JPA 기본 생성자
-        this.openTime = null;
-        this.closeTime = null;
     }
 
     public BusinessHours(LocalTime openTime, LocalTime closeTime) {

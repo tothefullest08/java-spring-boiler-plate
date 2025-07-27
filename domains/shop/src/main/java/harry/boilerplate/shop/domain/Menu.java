@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 /**
  * Menu 애그리게이트 루트
  * 메뉴 정보와 옵션그룹 관리를 담당
+ * Requirements: 10.5 - BaseEntity 상속으로 공통 필드 관리
  */
 @Entity
 @Table(name = "menu")
@@ -35,12 +36,8 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
     @Column(name = "is_open", nullable = false)
     private boolean open = false;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-        name = "menu_option_group", 
-        joinColumns = @JoinColumn(name = "menu_id")
-    )
-    private List<OptionGroup> optionGroups = new ArrayList<>();
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OptionGroupEntity> optionGroupEntities = new ArrayList<>();
 
     protected Menu() {
         // JPA 기본 생성자
@@ -66,7 +63,7 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
         this.description = description != null ? description.trim() : null;
         this.basePrice = basePrice.getAmount();
         this.open = false; // 초기 상태는 비공개 (Requirement 2.2)
-        this.optionGroups = new ArrayList<>();
+        this.optionGroupEntities = new ArrayList<>();
     }
 
     @Override
@@ -99,6 +96,8 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
      * 메뉴 공개 조건 검증
      */
     private void validateOpenConditions() {
+        List<OptionGroup> optionGroups = getOptionGroups();
+        
         // 1. 옵션그룹이 최소 1개 이상 존재해야 함
         if (optionGroups.isEmpty()) {
             throw new MenuDomainException(MenuErrorCode.INSUFFICIENT_OPTION_GROUPS);
@@ -132,8 +131,10 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
             throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_REQUIRED);
         }
 
+        List<OptionGroup> currentOptionGroups = getOptionGroups();
+        
         // 동일한 이름의 옵션그룹 존재 확인
-        boolean nameExists = optionGroups.stream()
+        boolean nameExists = currentOptionGroups.stream()
             .anyMatch(existing -> existing.getName().equals(optionGroup.getName()));
 
         if (nameExists) {
@@ -142,7 +143,7 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
 
         // 메뉴가 공개된 상태에서 필수 옵션그룹 추가 시 최대 3개 제한 확인
         if (this.open && optionGroup.isRequired()) {
-            long currentRequiredCount = optionGroups.stream()
+            long currentRequiredCount = currentOptionGroups.stream()
                 .filter(OptionGroup::isRequired)
                 .count();
 
@@ -151,7 +152,9 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
             }
         }
 
-        this.optionGroups.add(optionGroup);
+        // OptionGroupEntity 생성 및 추가
+        OptionGroupEntity optionGroupEntity = new OptionGroupEntity(this, optionGroup);
+        this.optionGroupEntities.add(optionGroupEntity);
     }
 
     /**
@@ -166,11 +169,12 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
 
-        // 옵션그룹 찾기
-        OptionGroup targetGroup = findOptionGroup(optionGroupId);
+        // 옵션그룹 엔티티 찾기
+        OptionGroupEntity targetEntity = findOptionGroupEntity(optionGroupId);
+        List<OptionGroup> currentOptionGroups = getOptionGroups();
 
         // 새로운 이름이 다른 옵션그룹과 중복되는지 확인
-        boolean nameExists = optionGroups.stream()
+        boolean nameExists = currentOptionGroups.stream()
             .filter(group -> !group.getId().equals(optionGroupId))
             .anyMatch(group -> group.getName().equals(newName.trim()));
 
@@ -179,8 +183,9 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
         }
 
         // 옵션그룹 이름 변경
-        OptionGroup updatedGroup = targetGroup.changeName(newName);
-        replaceOptionGroup(optionGroupId, updatedGroup);
+        OptionGroup currentGroup = targetEntity.toDomainObject();
+        OptionGroup updatedGroup = currentGroup.changeName(newName);
+        targetEntity.updateFromDomainObject(updatedGroup);
     }
 
     /**
@@ -201,12 +206,13 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
 
-        // 옵션그룹 찾기
-        OptionGroup targetGroup = findOptionGroup(optionGroupId);
+        // 옵션그룹 엔티티 찾기
+        OptionGroupEntity targetEntity = findOptionGroupEntity(optionGroupId);
 
         // 옵션 이름 변경
-        OptionGroup updatedGroup = targetGroup.changeOptionName(currentName, currentPrice, newName);
-        replaceOptionGroup(optionGroupId, updatedGroup);
+        OptionGroup currentGroup = targetEntity.toDomainObject();
+        OptionGroup updatedGroup = currentGroup.changeOptionName(currentName, currentPrice, newName);
+        targetEntity.updateFromDomainObject(updatedGroup);
     }
 
     /**
@@ -218,8 +224,9 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
             throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
 
-        // 옵션그룹 찾기
-        OptionGroup targetGroup = findOptionGroup(optionGroupId);
+        // 옵션그룹 엔티티 찾기
+        OptionGroupEntity targetEntity = findOptionGroupEntity(optionGroupId);
+        OptionGroup targetGroup = targetEntity.toDomainObject();
 
         // 메뉴가 공개된 상태에서는 삭제 후에도 최소 조건을 만족해야 함
         if (this.open) {
@@ -227,14 +234,15 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
         }
 
         // 옵션그룹 제거
-        this.optionGroups.removeIf(group -> group.getId().equals(optionGroupId));
+        this.optionGroupEntities.removeIf(entity -> entity.getId().equals(optionGroupId.getValue()));
     }
 
     /**
      * 옵션그룹 삭제 시 최소 조건 검증
      */
     private void validateRemovalConditions(OptionGroup groupToRemove) {
-        List<OptionGroup> remainingGroups = optionGroups.stream()
+        List<OptionGroup> currentOptionGroups = getOptionGroups();
+        List<OptionGroup> remainingGroups = currentOptionGroups.stream()
             .filter(group -> !group.getId().equals(groupToRemove.getId()))
             .collect(Collectors.toList());
 
@@ -262,25 +270,13 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
     }
 
     /**
-     * 옵션그룹 찾기
+     * 옵션그룹 엔티티 찾기
      */
-    private OptionGroup findOptionGroup(OptionGroupId optionGroupId) {
-        return optionGroups.stream()
-            .filter(group -> group.getId().equals(optionGroupId))
+    private OptionGroupEntity findOptionGroupEntity(OptionGroupId optionGroupId) {
+        return optionGroupEntities.stream()
+            .filter(entity -> entity.getId().equals(optionGroupId.getValue()))
             .findFirst()
             .orElseThrow(() -> new MenuDomainException(MenuErrorCode.OPTION_GROUP_NOT_FOUND));
-    }
-
-    /**
-     * 옵션그룹 교체
-     */
-    private void replaceOptionGroup(OptionGroupId optionGroupId, OptionGroup newGroup) {
-        for (int i = 0; i < optionGroups.size(); i++) {
-            if (optionGroups.get(i).getId().equals(optionGroupId)) {
-                optionGroups.set(i, newGroup);
-                return;
-            }
-        }
     }
 
     // Getters
@@ -305,8 +301,8 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
     }
 
     public List<OptionGroup> getOptionGroups() {
-        return new ArrayList<>(optionGroups);
+        return optionGroupEntities.stream()
+            .map(OptionGroupEntity::toDomainObject)
+            .collect(Collectors.toList());
     }
-
-
 }

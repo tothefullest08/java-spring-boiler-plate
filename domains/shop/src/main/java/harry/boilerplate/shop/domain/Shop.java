@@ -10,6 +10,7 @@ import java.util.UUID;
 /**
  * Shop 애그리게이트 루트
  * 가게 정보와 영업시간 관리를 담당
+ * Requirements: 10.5 - BaseEntity 상속으로 공통 필드 관리
  */
 @Entity
 @Table(name = "shop")
@@ -26,11 +27,9 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
     private java.math.BigDecimal minOrderAmount;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "openTime", column = @Column(name = "open_time")),
-            @AttributeOverride(name = "closeTime", column = @Column(name = "close_time"))
-    })
     private BusinessHours businessHours;
+
+
 
     protected Shop() {
         // JPA 기본 생성자
@@ -129,4 +128,6 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
     public BusinessHours getBusinessHours() {
         return businessHours;
     }
+
+
 }

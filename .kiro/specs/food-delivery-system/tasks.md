@@ -60,20 +60,20 @@
   - 각 비즈니스 규칙 위반 시 적절한 예외 발생 로직 추가
   - _Requirements: 1.5, 2.4, 3.1, 3.2, 3.4_
 
-- [ ] 6. Shop Context 인프라스트럭처 레이어 구현
-  - [ ] 6.1 JPA 엔티티 매핑 구현
+- [x] 6. Shop Context 인프라스트럭처 레이어 구현
+  - [x] 6.1 JPA 엔티티 매핑 구현
     - Shop, Menu JPA 엔티티 클래스 작성 (BaseEntity 상속)
     - OptionGroup, Option 임베디드 매핑 구현
     - 데이터베이스 테이블과 엔티티 매핑 설정
     - _Requirements: 10.5_
   
-  - [ ] 6.2 Command Repository 구현
+  - [x] 6.2 Command Repository 구현
     - ShopRepository, MenuRepository 인터페이스 정의
     - ShopRepositoryImpl, MenuRepositoryImpl JPA 구현체 작성
     - EntityManager 기반 CRUD 작업 구현
     - _Requirements: 9.1, 9.3_
   
-  - [ ] 6.3 Query DAO 구현
+  - [x] 6.3 Query DAO 구현
     - ShopQueryDao, MenuQueryDao 인터페이스 정의
     - 읽기 최적화된 쿼리 메서드 구현 (EntityManager 직접 사용)
     - Read Model 매핑 로직 구현
