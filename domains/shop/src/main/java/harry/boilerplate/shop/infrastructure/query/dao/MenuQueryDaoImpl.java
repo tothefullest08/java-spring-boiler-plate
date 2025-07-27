@@ -4,7 +4,7 @@ import harry.boilerplate.shop.application.query.readmodel.*;
 import harry.boilerplate.shop.infrastructure.query.mapper.MenuReadModelMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.jpa.QueryHints;
+import org.hibernate.jpa.AvailableHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +42,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> shopResults = entityManager.createQuery(shopJpql, Object[].class)
             .setParameter("shopId", shopId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         if (shopResults.isEmpty()) {
@@ -79,8 +79,8 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("shopId", shopId)
-            .setHint(QueryHints.READ_ONLY, true)
-            .setHint(QueryHints.CACHEABLE, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .setHint(AvailableHints.HINT_CACHEABLE, true)
             .getResultList();
             
         return results.stream()
@@ -108,8 +108,8 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("shopId", shopId)
-            .setHint(QueryHints.READ_ONLY, true)
-            .setHint(QueryHints.CACHEABLE, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .setHint(AvailableHints.HINT_CACHEABLE, true)
             .getResultList();
             
         return results.stream()
@@ -136,7 +136,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("menuId", menuId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         if (results.isEmpty()) {
@@ -167,7 +167,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
         
         Long count = entityManager.createQuery(jpql, Long.class)
             .setParameter("menuId", menuId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getSingleResult();
             
         return count > 0;
@@ -186,7 +186,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("shopId", shopId)
             .setParameter("nameKeyword", "%" + nameKeyword + "%")
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         return results.stream()
@@ -215,7 +215,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("menuId", menuId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         return results.stream()
@@ -244,7 +244,7 @@ public class MenuQueryDaoImpl implements MenuQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("optionGroupId", optionGroupId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         return results.stream()

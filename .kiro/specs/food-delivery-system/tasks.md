@@ -98,14 +98,14 @@
     - 입력 검증 어노테이션 추가
     - _Requirements: 2.1, 4.1, 4.2, 4.3_
 
-- [ ] 8. Shop Context API 레이어 구현
-  - [ ] 8.1 Command Controller 구현
+- [x] 8. Shop Context API 레이어 구현
+  - [x] 8.1 Command Controller 구현
     - ShopCommandController (POST, PUT 엔드포인트) 작성
     - MenuCommandController (POST, PUT 엔드포인트) 작성
     - CommandResultResponse 표준 응답 형식 적용
     - _Requirements: 9.1, 10.5_
   
-  - [ ] 8.2 Query Controller 구현
+  - [x] 8.2 Query Controller 구현
     - ShopQueryController (GET 엔드포인트) 작성
     - MenuQueryController (GET 엔드포인트) 작성
     - 메뉴보드 조회 API 구현

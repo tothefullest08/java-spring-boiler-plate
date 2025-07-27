@@ -4,7 +4,7 @@ import harry.boilerplate.shop.application.query.readmodel.ShopDetailReadModel;
 import harry.boilerplate.shop.application.query.readmodel.ShopSummaryReadModel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.hibernate.jpa.QueryHints;
+import org.hibernate.jpa.AvailableHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +34,8 @@ public class ShopQueryDaoImpl implements ShopQueryDao {
             """;
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
-            .setHint(QueryHints.READ_ONLY, true)
-            .setHint(QueryHints.CACHEABLE, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .setHint(AvailableHints.HINT_CACHEABLE, true)
             .getResultList();
             
         return results.stream()
@@ -63,8 +63,8 @@ public class ShopQueryDaoImpl implements ShopQueryDao {
             """;
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
-            .setHint(QueryHints.READ_ONLY, true)
-            .setHint(QueryHints.CACHEABLE, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
+            .setHint(AvailableHints.HINT_CACHEABLE, true)
             .getResultList();
             
         return results.stream()
@@ -91,7 +91,7 @@ public class ShopQueryDaoImpl implements ShopQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("shopId", shopId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         if (results.isEmpty()) {
@@ -117,7 +117,7 @@ public class ShopQueryDaoImpl implements ShopQueryDao {
         
         Long count = entityManager.createQuery(jpql, Long.class)
             .setParameter("shopId", shopId)
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getSingleResult();
             
         return count > 0;
@@ -134,7 +134,7 @@ public class ShopQueryDaoImpl implements ShopQueryDao {
             
         List<Object[]> results = entityManager.createQuery(jpql, Object[].class)
             .setParameter("nameKeyword", "%" + nameKeyword + "%")
-            .setHint(QueryHints.READ_ONLY, true)
+            .setHint(AvailableHints.HINT_READ_ONLY, true)
             .getResultList();
             
         return results.stream()
