@@ -112,19 +112,19 @@
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 9.2_
 
 - [ ] 9. Order Context 도메인 모델 구현
-  - [ ] 9.1 Cart 애그리게이트 구현
+  - [x] 9.1 Cart 애그리게이트 구현
     - Cart 엔티티와 CartId ValueObject 작성
     - CartLineItem ValueObject와 combine() 메서드 구현
     - Cart.start(), Cart.addItem() 메서드와 단일 가게 규칙 구현
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.6_
   
-  - [ ] 9.2 Order 애그리게이트 구현
+  - [x] 9.2 Order 애그리게이트 구현
     - Order 엔티티와 OrderId ValueObject 작성
     - OrderLineItem ValueObject 구조 구현
     - Cart.placeOrder(), Order.getPrice() 메서드 구현
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
   
-  - [ ] 9.3 Money ValueObject 구현
+  - [x] 9.3 Money ValueObject 구현
     - Money 클래스와 불변성 보장 구현
     - 금액 계산 메서드들 (add, multiply 등) 작성
     - Cart.getTotalPrice() 메서드에서 Money 타입 반환 구현
