@@ -1,31 +1,40 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.entity;
 
+import harry.boilerplate.common.domain.entity.DomainEntity;
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.common.domain.entity.ValueObject;
+import harry.boilerplate.shop.domain.aggregate.Menu;
+import harry.boilerplate.shop.domain.aggregate.MenuDomainException;
+import harry.boilerplate.shop.domain.aggregate.MenuErrorCode;
+import harry.boilerplate.shop.domain.valueobject.*;
 import jakarta.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * 옵션그룹 값 객체
+ * 옵션그룹 도메인 엔티티
  * 메뉴의 옵션들을 그룹화하여 관리
  */
-@Embeddable
-public class OptionGroup extends ValueObject {
+@Entity
+@Table(name = "option_group")
+public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
     
-    @Column(name = "option_group_id", nullable = false)
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
     
-    @Column(name = "option_group_name", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
+    
+    @Column(name = "name", nullable = false)
     private String name;
     
     @Column(name = "is_required", nullable = false)
     private boolean required;
     
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-        name = "menu_option", 
-        joinColumns = @JoinColumn(name = "option_group_id", referencedColumnName = "option_group_id")
+        name = "option_group_options",
+        joinColumns = @JoinColumn(name = "option_group_id")
     )
     private List<Option> options = new ArrayList<>();
     
@@ -33,7 +42,10 @@ public class OptionGroup extends ValueObject {
         // JPA 기본 생성자
     }
     
-    public OptionGroup(OptionGroupId id, String name, boolean required) {
+    public OptionGroup(Menu menu, OptionGroupId id, String name, boolean required) {
+        if (menu == null) {
+            throw new MenuDomainException(MenuErrorCode.MENU_REQUIRED);
+        }
         if (id == null) {
             throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
         }
@@ -41,23 +53,17 @@ public class OptionGroup extends ValueObject {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
         
+        this.menu = menu;
         this.id = id.getValue();
         this.name = name.trim();
         this.required = required;
         this.options = new ArrayList<>();
     }
     
-    public OptionGroup(OptionGroupId id, String name, boolean required, List<Option> options) {
-        this(id, name, required);
-        if (options != null) {
-            this.options = new ArrayList<>(options);
-        }
-    }
-    
     /**
      * 옵션 추가
      */
-    public OptionGroup addOption(Option option) {
+    public void addOption(Option option) {
         if (option == null) {
             throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_REQUIRED);
         }
@@ -72,16 +78,13 @@ public class OptionGroup extends ValueObject {
             throw new MenuDomainException(MenuErrorCode.DUPLICATE_OPTION_GROUP_NAME);
         }
         
-        List<Option> newOptions = new ArrayList<>(this.options);
-        newOptions.add(option);
-        
-        return new OptionGroup(new OptionGroupId(this.id), this.name, this.required, newOptions);
+        this.options.add(option);
     }
     
     /**
      * 옵션 제거
      */
-    public OptionGroup removeOption(String optionName, Money optionPrice) {
+    public void removeOption(String optionName, Money optionPrice) {
         if (optionName == null || optionName.trim().isEmpty()) {
             throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
@@ -89,33 +92,30 @@ public class OptionGroup extends ValueObject {
             throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
         
-        List<Option> newOptions = options.stream()
-            .filter(option -> !(option.getName().equals(optionName.trim()) && 
-                               option.getPrice().equals(optionPrice)))
-            .collect(Collectors.toList());
+        Option targetOption = options.stream()
+            .filter(option -> option.getName().equals(optionName.trim()) && 
+                             option.getPrice().equals(optionPrice))
+            .findFirst()
+            .orElseThrow(() -> new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND));
         
-        if (newOptions.size() == options.size()) {
-            throw new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND);
-        }
-        
-        return new OptionGroup(new OptionGroupId(this.id), this.name, this.required, newOptions);
+        this.options.remove(targetOption);
     }
     
     /**
      * 옵션그룹 이름 변경
      */
-    public OptionGroup changeName(String newName) {
+    public void changeName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
         }
         
-        return new OptionGroup(new OptionGroupId(this.id), newName, this.required, this.options);
+        this.name = newName.trim();
     }
     
     /**
      * 옵션 이름 변경
      */
-    public OptionGroup changeOptionName(String currentName, Money currentPrice, String newName) {
+    public void changeOptionName(String currentName, Money currentPrice, String newName) {
         if (currentName == null || currentName.trim().isEmpty()) {
             throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
@@ -126,23 +126,13 @@ public class OptionGroup extends ValueObject {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
         
-        List<Option> newOptions = options.stream()
-            .map(option -> {
-                if (option.getName().equals(currentName.trim()) && 
-                    option.getPrice().equals(currentPrice)) {
-                    return option.changeName(newName);
-                }
-                return option;
-            })
-            .collect(Collectors.toList());
+        Option targetOption = options.stream()
+            .filter(option -> option.getName().equals(currentName.trim()) && 
+                             option.getPrice().equals(currentPrice))
+            .findFirst()
+            .orElseThrow(() -> new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND));
         
-        // 변경된 옵션이 있는지 확인
-        boolean changed = !newOptions.equals(options);
-        if (!changed) {
-            throw new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND);
-        }
-        
-        return new OptionGroup(new OptionGroupId(this.id), this.name, this.required, newOptions);
+        targetOption.changeName(newName);
     }
     
     /**
@@ -166,7 +156,7 @@ public class OptionGroup extends ValueObject {
         return options.isEmpty();
     }
     
-    // Getters
+    @Override
     public OptionGroupId getId() {
         return new OptionGroupId(id);
     }
@@ -181,20 +171,6 @@ public class OptionGroup extends ValueObject {
     
     public List<Option> getOptions() {
         return new ArrayList<>(options);
-    }
-    
-    @Override
-    protected boolean equalsByValue(Object other) {
-        OptionGroup that = (OptionGroup) other;
-        return required == that.required &&
-               Objects.equals(id, that.id) &&
-               Objects.equals(name, that.name) &&
-               Objects.equals(options, that.options);
-    }
-    
-    @Override
-    protected Object[] getEqualityComponents() {
-        return new Object[]{id, name, required, options};
     }
     
     @Override

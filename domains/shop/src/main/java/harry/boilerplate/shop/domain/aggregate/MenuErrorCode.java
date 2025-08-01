@@ -1,4 +1,4 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.aggregate;
 
 import harry.boilerplate.common.exception.ErrorCode;
 
@@ -26,7 +26,8 @@ public enum MenuErrorCode implements ErrorCode {
     NEW_OPTION_GROUP_NAME_REQUIRED("MENU-DOMAIN-017", "새로운 옵션그룹 이름은 필수입니다"),
     CURRENT_OPTION_NAME_REQUIRED("MENU-DOMAIN-018", "현재 옵션 이름은 필수입니다"),
     CURRENT_OPTION_PRICE_REQUIRED("MENU-DOMAIN-019", "현재 옵션 가격은 필수입니다"),
-    NEW_OPTION_NAME_REQUIRED("MENU-DOMAIN-020", "새로운 옵션 이름은 필수입니다");
+    NEW_OPTION_NAME_REQUIRED("MENU-DOMAIN-020", "새로운 옵션 이름은 필수입니다"),
+    MENU_REQUIRED("MENU-DOMAIN-021", "메뉴는 필수입니다");
 
     private final String code;
     private final String message;

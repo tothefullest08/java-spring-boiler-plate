@@ -1,6 +1,8 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.valueobject;
 
 import harry.boilerplate.common.domain.entity.ValueObject;
+import harry.boilerplate.shop.domain.aggregate.ShopDomainException;
+import harry.boilerplate.shop.domain.aggregate.ShopErrorCode;
 import jakarta.persistence.Embeddable;
 import java.time.LocalTime;
 import java.util.Objects;

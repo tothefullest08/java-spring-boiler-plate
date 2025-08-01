@@ -1,8 +1,9 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.aggregate;
 
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.shop.domain.event.ShopClosedEvent;
+import harry.boilerplate.shop.domain.valueobject.*;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -28,8 +29,6 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
 
     @Embedded
     private BusinessHours businessHours;
-
-
 
     protected Shop() {
         // JPA 기본 생성자
@@ -128,6 +127,4 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
     public BusinessHours getBusinessHours() {
         return businessHours;
     }
-
-
 }

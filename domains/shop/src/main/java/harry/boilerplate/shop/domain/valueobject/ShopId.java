@@ -1,4 +1,4 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.valueobject;
 
 import harry.boilerplate.common.domain.entity.EntityId;
 

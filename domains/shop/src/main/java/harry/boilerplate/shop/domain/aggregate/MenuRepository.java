@@ -1,5 +1,6 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.aggregate;
 
+import harry.boilerplate.shop.domain.valueobject.*;
 import java.util.List;
 
 /**

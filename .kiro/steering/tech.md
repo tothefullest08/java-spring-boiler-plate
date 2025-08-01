@@ -358,6 +358,78 @@ domains/common/src/main/java/harry/boilerplate/common/
 └── config/                        # 공통 설정
 ```
 
+### DDD 분류 및 상속 구조 패턴 (필수)
+```java
+// ✅ Common 모듈: DomainEntity 추가
+public abstract class DomainEntity<T extends DomainEntity<T, TID>, TID> extends BaseEntity {
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        return equals((T) other);
+    }
+    
+    public boolean equals(T other) {
+        if (other == null || getId() == null) return false;
+        if (other.getClass().equals(getClass())) {
+            return getId().equals(other.getId());
+        }
+        return super.equals(other);
+    }
+    
+    @Override
+    public int hashCode() {
+        return getId() == null ? 0 : getId().hashCode();
+    }
+    
+    public abstract TID getId();
+}
+
+// ✅ 애그리게이트 루트: AggregateRoot 상속
+@Entity
+@Table(name = "menu")
+public class Menu extends AggregateRoot<Menu, MenuId> {
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    private List<OptionGroup> optionGroups = new ArrayList<>();
+    
+    public void addOptionGroup(String name, boolean required) {
+        OptionGroup optionGroup = new OptionGroup(this, OptionGroupId.generate(), name, required);
+        this.optionGroups.add(optionGroup);
+    }
+}
+
+// ✅ 도메인 엔티티: DomainEntity 상속
+@Entity
+@Table(name = "option_group")
+public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+    
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "option_group_options")
+    private List<Option> options = new ArrayList<>();
+    
+    public void addOption(Option option) {
+        this.options.add(option);
+    }
+}
+
+// ✅ 값 객체: ValueObject 상속 (불변)
+@Embeddable
+public class Option extends ValueObject {
+    @Column(name = "option_name")
+    private String name;
+    
+    @Column(name = "option_price")
+    private BigDecimal price;
+    
+    // 불변 객체 - 변경 시 새 인스턴스 반환
+    public Option changeName(String newName) {
+        return new Option(newName, Money.of(this.price));
+    }
+}
+```
+
 ### Domain Event Pattern (필수)
 
 #### 바운디드 컨텍스트 격리 원칙

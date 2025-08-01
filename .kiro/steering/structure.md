@@ -11,13 +11,43 @@ java-spring-boiler-plate/
 │   ├── common/        # 공통 모듈 (아키텍처 패턴)
 │   │   ├── build.gradle
 │   │   └── src/main/java/harry/boilerplate/common/
-│   │       ├── domain/        # 도메인 이벤트, 기본 엔티티
-│   │       ├── exception/     # 공통 예외 처리
-│   │       ├── response/      # 공통 응답 패턴
-│   │       └── config/        # 공통 설정
+│   │       ├── domain/
+│   │       │   ├── entity/        # 기본 엔티티 클래스들
+│   │       │   │   ├── AggregateRoot.java
+│   │       │   │   ├── BaseEntity.java
+│   │       │   │   ├── DomainEntity.java    # 새로 추가
+│   │       │   │   ├── ValueObject.java
+│   │       │   │   ├── EntityId.java
+│   │       │   │   └── Money.java
+│   │       │   └── event/         # 도메인 이벤트 패턴
+│   │       │       └── DomainEvent.java
+│   │       ├── exception/         # 공통 예외 처리
+│   │       ├── response/          # 공통 응답 패턴
+│   │       └── config/            # 공통 설정
 │   ├── shop/          # Shop Context 독립 프로젝트
 │   │   ├── build.gradle
 │   │   ├── src/main/java/harry/boilerplate/shop/
+│   │   │   └── domain/
+│   │   │       ├── aggregate/     # 애그리게이트 루트들
+│   │   │       │   ├── Menu.java
+│   │   │       │   ├── Shop.java
+│   │   │       │   ├── MenuRepository.java
+│   │   │       │   ├── ShopRepository.java
+│   │   │       │   ├── MenuDomainException.java
+│   │   │       │   ├── ShopDomainException.java
+│   │   │       │   ├── MenuErrorCode.java
+│   │   │       │   └── ShopErrorCode.java
+│   │   │       ├── entity/        # 도메인 엔티티들
+│   │   │       │   └── OptionGroup.java
+│   │   │       ├── valueobject/   # 값 객체들
+│   │   │       │   ├── MenuId.java
+│   │   │       │   ├── ShopId.java
+│   │   │       │   ├── OptionGroupId.java
+│   │   │       │   ├── Option.java
+│   │   │       │   └── BusinessHours.java
+│   │   │       └── event/         # 도메인 이벤트들
+│   │   │           ├── MenuOpenedEvent.java
+│   │   │           └── ShopClosedEvent.java
 │   │   └── src/main/resources/application-shop.yml
 │   ├── order/         # Order Context 독립 프로젝트  
 │   │   ├── build.gradle
@@ -35,10 +65,27 @@ java-spring-boiler-plate/
 ### 각 컨텍스트 내부 구조
 ```
 domains/shop/src/main/java/harry/boilerplate/shop/
-├── domain/                          # Command 전용 도메인 모델
-│   ├── Menu.java                   # JPA Entity (Command용)
-│   ├── Shop.java                   # JPA Entity (Command용)
-│   └── MenuRepository.java         # Command Repository Interface
+├── domain/                          # 도메인 레이어 (DDD 분류)
+│   ├── aggregate/                   # 애그리게이트 루트들
+│   │   ├── Menu.java               # Menu 애그리게이트 루트
+│   │   ├── Shop.java               # Shop 애그리게이트 루트
+│   │   ├── MenuRepository.java     # Menu Repository Interface
+│   │   ├── ShopRepository.java     # Shop Repository Interface
+│   │   ├── MenuDomainException.java
+│   │   ├── ShopDomainException.java
+│   │   ├── MenuErrorCode.java
+│   │   └── ShopErrorCode.java
+│   ├── entity/                      # 도메인 엔티티들 (DomainEntity 상속)
+│   │   └── OptionGroup.java        # Menu 애그리게이트 내부 엔티티
+│   ├── valueobject/                 # 값 객체들 (ValueObject 상속)
+│   │   ├── MenuId.java             # Menu ID
+│   │   ├── ShopId.java             # Shop ID
+│   │   ├── OptionGroupId.java      # OptionGroup ID
+│   │   ├── Option.java             # 옵션 값 객체
+│   │   └── BusinessHours.java      # 영업시간 값 객체
+│   └── event/                       # 도메인 이벤트들
+│       ├── MenuOpenedEvent.java
+│       └── ShopClosedEvent.java
 ├── application/
 │   ├── command/                    # 명령 처리 (쓰기 작업)
 │   │   ├── handler/                # Command Handler
@@ -84,10 +131,47 @@ domains/shop/src/main/java/harry/boilerplate/shop/
 ### 애그리게이트 설계 원칙
 ```java
 // ✅ 필수: 애그리게이트 루트 상속
-public class Shop extends AggregateRoot<Shop, ShopId>
-public class Menu extends AggregateRoot<Menu, MenuId>  
-public class Cart extends AggregateRoot<Cart, CartId>
-public class Order extends AggregateRoot<Order, OrderId>
+@Entity
+@Table(name = "shop")
+public class Shop extends AggregateRoot<Shop, ShopId> {
+    // 애그리게이트 루트 로직
+}
+
+@Entity
+@Table(name = "menu")
+public class Menu extends AggregateRoot<Menu, MenuId> {
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    private List<OptionGroup> optionGroups = new ArrayList<>();
+    
+    // 애그리게이트 루트 로직
+}
+
+// ✅ 도메인 엔티티: DomainEntity 상속
+@Entity
+@Table(name = "option_group")
+public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
+    
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "option_group_options")
+    private List<Option> options = new ArrayList<>();
+    
+    // 도메인 엔티티 로직
+}
+
+// ✅ 값 객체: ValueObject 상속
+@Embeddable
+public class Option extends ValueObject {
+    @Column(name = "option_name")
+    private String name;
+    
+    @Column(name = "option_price")
+    private BigDecimal price;
+    
+    // 값 객체 로직 (불변성 보장)
+}
 ```
 
 ### ValueObject 불변성 (필수)
@@ -109,6 +193,39 @@ public class Money extends ValueObject {
         return new Money(this.amount.add(other.amount), this.currency);
     }
 }
+```
+
+### DDD 분류 및 상속 구조 (필수)
+```java
+// ✅ 애그리게이트 루트: AggregateRoot 상속
+public abstract class AggregateRoot<T extends AggregateRoot<T, TID>, TID> extends BaseEntity {
+    // 도메인 이벤트 발행 기능
+    // 애그리게이트 경계 관리
+}
+
+// ✅ 도메인 엔티티: DomainEntity 상속 (애그리게이트 내부 엔티티)
+public abstract class DomainEntity<T extends DomainEntity<T, TID>, TID> extends BaseEntity {
+    // ID 기반 동등성 비교
+    // 생명주기 관리
+}
+
+// ✅ 값 객체: ValueObject 상속 (불변 객체)
+public abstract class ValueObject {
+    // 값 기반 동등성 비교
+    // 불변성 보장
+}
+
+// ✅ 디렉토리 분류 규칙
+domains/shop/src/main/java/harry/boilerplate/shop/domain/
+├── aggregate/     # 애그리게이트 루트 + Repository + Exception + ErrorCode
+├── entity/        # 도메인 엔티티 (DomainEntity 상속)
+├── valueobject/   # 값 객체 (ValueObject 상속, ID 클래스 포함)
+└── event/         # 도메인 이벤트
+
+// ❌ 금지: JPA 엔티티와 도메인 엔티티 분리
+// - 변환 로직 불필요
+// - 코드 복잡도 감소
+// - 성능 오버헤드 제거
 ```
 
 ## CQRS 명명 규칙 (필수)

@@ -1,7 +1,9 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.valueobject;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.common.domain.entity.ValueObject;
+import harry.boilerplate.shop.domain.aggregate.MenuDomainException;
+import harry.boilerplate.shop.domain.aggregate.MenuErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;

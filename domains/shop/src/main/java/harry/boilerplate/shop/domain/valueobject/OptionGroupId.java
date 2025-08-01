@@ -1,4 +1,4 @@
-package harry.boilerplate.shop.domain;
+package harry.boilerplate.shop.domain.valueobject;
 
 import harry.boilerplate.common.domain.entity.EntityId;
 
@@ -13,5 +13,12 @@ public class OptionGroupId extends EntityId {
     
     public OptionGroupId(String value) {
         super(value);
+    }
+    
+    /**
+     * 새로운 OptionGroupId 생성
+     */
+    public static OptionGroupId generate() {
+        return new OptionGroupId();
     }
 }
