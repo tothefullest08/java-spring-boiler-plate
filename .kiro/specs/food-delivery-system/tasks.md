@@ -155,7 +155,7 @@
     - 사용자 유효성 검증 API 호출 구현
     - _Requirements: 8.4, 5.6_
 
-- [ ] 12. Order Context 도메인 예외 처리 구현
+- [x] 12. Order Context 도메인 예외 처리 구현
   - CartErrorCode, OrderErrorCode enum 작성
   - CartDomainException, OrderDomainException 클래스 구현
   - 장바구니 및 주문 비즈니스 규칙 위반 시 예외 처리 로직 추가
