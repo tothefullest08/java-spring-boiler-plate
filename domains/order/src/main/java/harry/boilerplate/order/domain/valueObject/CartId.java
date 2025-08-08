@@ -13,7 +13,7 @@ public class CartId extends EntityId {
         super(value);
     }
     
-    public static CartId generate() {
+        public static CartId generate() {
         return new CartId(UUID.randomUUID().toString());
     }
     

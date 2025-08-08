@@ -1,17 +1,18 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.common.domain.event.DomainEvent;
 import harry.boilerplate.order.domain.aggregate.Cart;
 import harry.boilerplate.order.domain.exception.CartDomainException;
 import harry.boilerplate.order.domain.exception.CartErrorCode;
 import harry.boilerplate.order.domain.aggregate.Order;
 import harry.boilerplate.order.domain.entity.CartLineItem;
+import harry.boilerplate.order.domain.event.CartItemAddedEvent;
 import harry.boilerplate.order.domain.valueObject.*;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -304,5 +305,90 @@ class CartTest {
         // When & Then
         assertThat(emptyCart.getTotalPrice()).isEqualTo(Money.zero());
         assertThat(emptyCart.getTotalPrice().isZero()).isTrue();
+    }
+    
+    @Test
+    void 장바구니에_아이템_추가_시_CartItemAddedEvent_발행() {
+        // Given
+        UserId userId = UserId.of("user-1");
+        Cart cart = new Cart(userId);
+        MenuId menuId = MenuId.of("menu-1");
+        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
+
+        // When
+        cart.addItem(menuId, options, 2);
+
+        // Then
+        assertThat(cart.hasDomainEvents()).isTrue();
+        List<DomainEvent> events = cart.getDomainEvents();
+        assertThat(events).hasSize(1);
+        
+        DomainEvent event = events.get(0);
+        assertThat(event).isInstanceOf(CartItemAddedEvent.class);
+        
+        CartItemAddedEvent cartItemAddedEvent = (CartItemAddedEvent) event;
+        assertThat(cartItemAddedEvent.getAggregateId()).isEqualTo(cart.getId().getValue());
+        assertThat(cartItemAddedEvent.getAggregateType()).isEqualTo("Cart");
+        assertThat(cartItemAddedEvent.getUserId()).isEqualTo(userId.getValue());
+        assertThat(cartItemAddedEvent.getShopId()).isNull(); // shopId가 설정되지 않은 상태
+        assertThat(cartItemAddedEvent.getMenuId()).isEqualTo(menuId.getValue());
+        assertThat(cartItemAddedEvent.getQuantity()).isEqualTo(2);
+        assertThat(cartItemAddedEvent.getEventId()).isNotNull();
+        assertThat(cartItemAddedEvent.getOccurredAt()).isNotNull();
+        assertThat(cartItemAddedEvent.getVersion()).isEqualTo(1);
+    }
+    
+    @Test
+    void 가게_검증_포함_아이템_추가_시_CartItemAddedEvent_발행() {
+        // Given
+        UserId userId = UserId.of("user-1");
+        Cart cart = new Cart(userId);
+        ShopId shopId = ShopId.of("shop-1");
+        MenuId menuId = MenuId.of("menu-1");
+        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
+
+        // When
+        cart.addItem(shopId, menuId, options, 1);
+
+        // Then
+        assertThat(cart.hasDomainEvents()).isTrue();
+        List<DomainEvent> events = cart.getDomainEvents();
+        assertThat(events).hasSize(1);
+        
+        DomainEvent event = events.get(0);
+        assertThat(event).isInstanceOf(CartItemAddedEvent.class);
+        
+        CartItemAddedEvent cartItemAddedEvent = (CartItemAddedEvent) event;
+        assertThat(cartItemAddedEvent.getAggregateId()).isEqualTo(cart.getId().getValue());
+        assertThat(cartItemAddedEvent.getUserId()).isEqualTo(userId.getValue());
+        assertThat(cartItemAddedEvent.getShopId()).isEqualTo(shopId.getValue());
+        assertThat(cartItemAddedEvent.getMenuId()).isEqualTo(menuId.getValue());
+        assertThat(cartItemAddedEvent.getQuantity()).isEqualTo(1);
+    }
+    
+    @Test
+    void 동일한_메뉴와_옵션_조합_병합_시_CartItemAddedEvent_발행() {
+        // Given
+        UserId userId = UserId.of("user-1");
+        Cart cart = new Cart(userId);
+        MenuId menuId = MenuId.of("menu-1");
+        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
+
+        // When
+        cart.addItem(menuId, options, 2);
+        cart.addItem(menuId, options, 3);
+
+        // Then
+        assertThat(cart.hasDomainEvents()).isTrue();
+        List<DomainEvent> events = cart.getDomainEvents();
+        assertThat(events).hasSize(2); // 두 번의 addItem 호출로 2개의 이벤트 발행
+        
+        // 첫 번째 이벤트
+        CartItemAddedEvent firstEvent = (CartItemAddedEvent) events.get(0);
+        assertThat(firstEvent.getQuantity()).isEqualTo(2);
+        
+        // 두 번째 이벤트
+        CartItemAddedEvent secondEvent = (CartItemAddedEvent) events.get(1);
+        assertThat(secondEvent.getQuantity()).isEqualTo(3);
     }
 }

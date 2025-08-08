@@ -1,8 +1,10 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.common.domain.event.DomainEvent;
 import harry.boilerplate.order.domain.aggregate.Cart;
 import harry.boilerplate.order.domain.aggregate.Order;
+import harry.boilerplate.order.domain.event.OrderPlacedEvent;
 import harry.boilerplate.order.domain.exception.OrderDomainException;
 import harry.boilerplate.order.domain.exception.OrderErrorCode;
 import harry.boilerplate.order.domain.entity.OrderLineItem;
@@ -192,5 +194,67 @@ class OrderTest {
         // When & Then
         assertThat(order.isFromShop(shopId)).isTrue();
         assertThat(order.isFromShop(ShopId.of("other-shop"))).isFalse();
+    }
+    
+    @Test
+    void 주문_생성_시_OrderPlacedEvent_발행() {
+        // Given
+        UserId userId = UserId.of("user-1");
+        ShopId shopId = ShopId.of("shop-1");
+        OrderLineItem item = new OrderLineItem(
+            MenuId.of("menu-1"), "삼겹살", 
+            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
+            1, Money.of(10000)
+        );
+        List<OrderLineItem> orderItems = Arrays.asList(item);
+        
+        // When
+        Order order = new Order(userId, shopId, orderItems);
+        
+        // Then
+        assertThat(order.hasDomainEvents()).isTrue();
+        List<DomainEvent> events = order.getDomainEvents();
+        assertThat(events).hasSize(1);
+        
+        DomainEvent event = events.get(0);
+        assertThat(event).isInstanceOf(OrderPlacedEvent.class);
+        
+        OrderPlacedEvent orderPlacedEvent = (OrderPlacedEvent) event;
+        assertThat(orderPlacedEvent.getAggregateId()).isEqualTo(order.getId().getValue());
+        assertThat(orderPlacedEvent.getAggregateType()).isEqualTo("Order");
+        assertThat(orderPlacedEvent.getUserId()).isEqualTo(userId.getValue());
+        assertThat(orderPlacedEvent.getShopId()).isEqualTo(shopId.getValue());
+        assertThat(orderPlacedEvent.getTotalAmount()).isEqualTo(Money.of(10000).getAmount());
+        assertThat(orderPlacedEvent.getEventId()).isNotNull();
+        assertThat(orderPlacedEvent.getOccurredAt()).isNotNull();
+        assertThat(orderPlacedEvent.getVersion()).isEqualTo(1);
+    }
+    
+    @Test
+    void 장바구니로부터_주문_생성_시_OrderPlacedEvent_발행() {
+        // Given
+        UserId userId = UserId.of("user-1");
+        ShopId shopId = ShopId.of("shop-1");
+        Cart cart = new Cart(userId);
+        
+        MenuId menuId = MenuId.of("menu-1");
+        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
+        cart.addItem(shopId, menuId, options, 2);
+        
+        // When
+        Order order = Order.fromCart(cart);
+        
+        // Then
+        assertThat(order.hasDomainEvents()).isTrue();
+        List<DomainEvent> events = order.getDomainEvents();
+        assertThat(events).hasSize(1);
+        
+        DomainEvent event = events.get(0);
+        assertThat(event).isInstanceOf(OrderPlacedEvent.class);
+        
+        OrderPlacedEvent orderPlacedEvent = (OrderPlacedEvent) event;
+        assertThat(orderPlacedEvent.getAggregateId()).isEqualTo(order.getId().getValue());
+        assertThat(orderPlacedEvent.getUserId()).isEqualTo(userId.getValue());
+        assertThat(orderPlacedEvent.getShopId()).isEqualTo(shopId.getValue());
     }
 }

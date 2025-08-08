@@ -130,14 +130,14 @@
     - Cart.getTotalPrice() 메서드에서 Money 타입 반환 구현
     - _Requirements: 5.5, 6.3_
 
-- [ ] 10. Order Context 도메인 이벤트 구현
-  - [ ] 10.1 Order Context 도메인 이벤트 작성
+- [x] 10. Order Context 도메인 이벤트 구현
+  - [x] 10.1 Order Context 도메인 이벤트 작성
     - OrderPlacedEvent 도메인 이벤트 클래스 구현
     - CartItemAddedEvent 도메인 이벤트 클래스 구현
     - 각 이벤트에 필요한 비즈니스 데이터 포함
     - _Requirements: 6.1, 5.1_
   
-  - [ ] 10.2 애그리게이트에서 도메인 이벤트 발행
+  - [x] 10.2 애그리게이트에서 도메인 이벤트 발행
     - Order.from() 메서드에서 OrderPlacedEvent 발행 로직 추가
     - Cart.addItem() 메서드에서 CartItemAddedEvent 발행 로직 추가
     - AggregateRoot.addDomainEvent() 메서드 활용
