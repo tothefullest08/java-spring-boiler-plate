@@ -1,6 +1,10 @@
 package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.shop.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.domain.exception.MenuErrorCode;
+import harry.boilerplate.shop.domain.valueObject.Option;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,9 +51,9 @@ class OptionTest {
         void 옵션이름_null_예외() {
             // When & Then
             assertThatThrownBy(() -> new Option(null, Money.of(new BigDecimal("1000"))))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
 
         @Test
@@ -57,14 +61,14 @@ class OptionTest {
         void 옵션이름_빈문자열_예외() {
             // When & Then
             assertThatThrownBy(() -> new Option("", Money.of(new BigDecimal("1000"))))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
 
             assertThatThrownBy(() -> new Option("   ", Money.of(new BigDecimal("1000"))))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.CURRENT_OPTION_NAME_REQUIRED);
         }
 
         @Test
@@ -72,9 +76,9 @@ class OptionTest {
         void 옵션가격_null_예외() {
             // When & Then
             assertThatThrownBy(() -> new Option("곱빼기", null))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
         }
 
         @Test
@@ -82,9 +86,9 @@ class OptionTest {
         void 옵션가격_음수_예외() {
             // When & Then
             assertThatThrownBy(() -> new Option("곱빼기", Money.of(new BigDecimal("-1000"))))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.INVALID_BASE_PRICE);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.INVALID_BASE_PRICE);
         }
 
         @Test
@@ -125,9 +129,9 @@ class OptionTest {
 
             // When & Then
             assertThatThrownBy(() -> option.changeName(null))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
 
         @Test
@@ -138,14 +142,14 @@ class OptionTest {
 
             // When & Then
             assertThatThrownBy(() -> option.changeName(""))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
 
             assertThatThrownBy(() -> option.changeName("   "))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
 
         @Test
@@ -171,9 +175,9 @@ class OptionTest {
 
             // When & Then
             assertThatThrownBy(() -> option.changePrice(null))
-                .isInstanceOf(MenuDomainException.class)
-                .extracting(e -> ((MenuDomainException) e).getErrorCode())
-                .isEqualTo(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
+                    .isInstanceOf(MenuDomainException.class)
+                    .extracting(e -> ((MenuDomainException) e).getErrorCode())
+                    .isEqualTo(MenuErrorCode.NEW_OPTION_PRICE_REQUIRED);
         }
     }
 

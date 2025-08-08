@@ -3,9 +3,15 @@ package harry.boilerplate.shop.domain.aggregate;
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.shop.domain.event.ShopClosedEvent;
-import harry.boilerplate.shop.domain.valueobject.*;
+import harry.boilerplate.shop.domain.valueObject.*;
+import harry.boilerplate.shop.domain.exception.ShopDomainException;
+import harry.boilerplate.shop.domain.exception.ShopErrorCode;
 import jakarta.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -60,7 +66,8 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
         if (businessHours == null) {
             return false;
         }
-        return businessHours.isOpenAt(LocalTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        return businessHours.isOpenAt(now.getDayOfWeek(), now.toLocalTime());
     }
 
     /**
@@ -70,7 +77,8 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
         if (businessHours == null) {
             return false;
         }
-        return businessHours.isOpenAt(time);
+        LocalDateTime now = LocalDateTime.now();
+        return businessHours.isOpenAt(now.getDayOfWeek(), time);
     }
 
     /**
@@ -84,7 +92,12 @@ public class Shop extends AggregateRoot<Shop, ShopId> {
             throw new ShopDomainException(ShopErrorCode.INVALID_OPERATING_HOURS);
         }
 
-        this.businessHours = new BusinessHours(openTime, closeTime);
+        // 모든 요일에 동일한 영업시간 적용
+        Map<DayOfWeek, LocalTime[]> weeklyHours = new EnumMap<>(DayOfWeek.class);
+        for (DayOfWeek day : DayOfWeek.values()) {
+            weeklyHours.put(day, new LocalTime[]{openTime, closeTime});
+        }
+        this.businessHours = new BusinessHours(weeklyHours);
     }
 
     /**

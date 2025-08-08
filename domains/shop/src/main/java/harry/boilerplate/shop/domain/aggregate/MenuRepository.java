@@ -1,7 +1,8 @@
 package harry.boilerplate.shop.domain.aggregate;
 
-import harry.boilerplate.shop.domain.valueobject.*;
 import java.util.List;
+
+import harry.boilerplate.shop.domain.valueObject.*;
 
 /**
  * Menu 애그리게이트 Repository 인터페이스

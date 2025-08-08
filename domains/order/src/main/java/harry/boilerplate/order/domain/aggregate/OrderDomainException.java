@@ -1,26 +1,26 @@
-package harry.boilerplate.order.domain;
+package harry.boilerplate.order.domain.aggregate;
 
 import harry.boilerplate.common.exception.DomainException;
 import harry.boilerplate.common.exception.ErrorCode;
 
 /**
- * Cart 도메인 예외
+ * Order 도메인 예외
  */
-public class CartDomainException extends DomainException {
+public class OrderDomainException extends DomainException {
     
-    private final CartErrorCode errorCode;
+    private final OrderErrorCode errorCode;
     
-    public CartDomainException(CartErrorCode errorCode) {
+    public OrderDomainException(OrderErrorCode errorCode) {
         super(errorCode.getMessage(), null);
         this.errorCode = errorCode;
     }
     
-    public CartDomainException(CartErrorCode errorCode, String additionalMessage) {
+    public OrderDomainException(OrderErrorCode errorCode, String additionalMessage) {
         super(errorCode.getMessage() + ": " + additionalMessage, null);
         this.errorCode = errorCode;
     }
     
-    public CartDomainException(CartErrorCode errorCode, Throwable cause) {
+    public OrderDomainException(OrderErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }

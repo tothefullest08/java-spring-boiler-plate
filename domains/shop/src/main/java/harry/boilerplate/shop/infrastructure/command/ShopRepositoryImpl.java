@@ -1,8 +1,8 @@
 package harry.boilerplate.shop.infrastructure.command;
 
-import harry.boilerplate.shop.domain.Shop;
-import harry.boilerplate.shop.domain.ShopId;
-import harry.boilerplate.shop.domain.ShopRepository;
+import harry.boilerplate.shop.domain.aggregate.Shop;
+import harry.boilerplate.shop.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.domain.valueObject.ShopId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;

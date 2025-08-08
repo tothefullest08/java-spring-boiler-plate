@@ -1,24 +1,23 @@
-package harry.boilerplate.shop.domain.valueobject;
+package harry.boilerplate.shop.domain.valueObject;
 
 import harry.boilerplate.common.domain.entity.EntityId;
 
+import java.util.UUID;
+
 /**
- * OptionGroup의 고유 식별자
+ * OptionGroup의 식별자
  */
 public class OptionGroupId extends EntityId {
-    
-    public OptionGroupId() {
-        super();
-    }
     
     public OptionGroupId(String value) {
         super(value);
     }
     
-    /**
-     * 새로운 OptionGroupId 생성
-     */
     public static OptionGroupId generate() {
-        return new OptionGroupId();
+        return new OptionGroupId(UUID.randomUUID().toString());
+    }
+    
+    public static OptionGroupId of(String value) {
+        return new OptionGroupId(value);
     }
 }

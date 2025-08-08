@@ -1,9 +1,10 @@
 package harry.boilerplate.shop.infrastructure.query.mapper;
 
 import harry.boilerplate.shop.application.query.readmodel.*;
-import harry.boilerplate.shop.domain.Menu;
-import harry.boilerplate.shop.domain.Option;
-import harry.boilerplate.shop.domain.OptionGroup;
+import harry.boilerplate.shop.domain.aggregate.Menu;
+import harry.boilerplate.shop.domain.entity.OptionGroup;
+import harry.boilerplate.shop.domain.valueObject.Option;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;

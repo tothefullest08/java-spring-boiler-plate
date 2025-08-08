@@ -2,10 +2,11 @@ package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.shop.application.command.dto.CreateMenuCommand;
-import harry.boilerplate.shop.domain.Menu;
-import harry.boilerplate.shop.domain.MenuRepository;
-import harry.boilerplate.shop.domain.ShopId;
-import harry.boilerplate.shop.domain.ShopRepository;
+import harry.boilerplate.shop.domain.aggregate.Menu;
+import harry.boilerplate.shop.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.domain.valueObject.ShopId;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

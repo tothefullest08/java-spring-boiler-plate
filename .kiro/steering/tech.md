@@ -722,6 +722,40 @@ public class MenuBoardQueryHandler {
 
 ## CQRS 테스트 전략
 
+### 테스트 실행 명령어 (필수 --info 옵션)
+
+**⚠️ 중요: 모든 테스트 명령어에는 반드시 `--info` 옵션을 포함해야 합니다.**
+
+```bash
+# 컨텍스트별 테스트 실행 (상세 출력 포함)
+./gradlew :domains:common:test --info
+./gradlew :domains:shop:test --info  
+./gradlew :domains:order:test --info
+./gradlew :domains:user:test --info
+
+# 특정 테스트 클래스 실행
+./gradlew :domains:shop:test --tests MenuTest --info
+./gradlew :domains:order:test --tests CartTest --info
+
+# 특정 테스트 메서드 실행
+./gradlew :domains:shop:test --tests MenuTest.메뉴_생성_성공 --info
+
+# 전체 프로젝트 테스트
+./gradlew test --info
+
+# 테스트 실패 시 더 상세한 정보 (스택트레이스 포함)
+./gradlew :domains:shop:test --info --stacktrace
+
+# 테스트 실패해도 계속 진행
+./gradlew :domains:shop:test --info --continue
+```
+
+#### --info 옵션의 장점:
+- ✅ **테스트 실패 시 에러 메시지가 터미널에 직접 출력**
+- ✅ **어떤 테스트가 실패했는지 명확하게 확인 가능**
+- ✅ **실패 원인을 바로 파악하여 빠른 문제 해결**
+- ✅ **스택트레이스와 상세한 디버깅 정보 제공**
+
 ### Command 테스트
 ```java
 @Test

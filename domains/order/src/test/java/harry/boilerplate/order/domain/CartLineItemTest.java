@@ -1,5 +1,8 @@
 package harry.boilerplate.order.domain;
 
+import harry.boilerplate.order.domain.entity.CartLineItem;
+import harry.boilerplate.order.domain.valueObject.*;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -145,14 +148,11 @@ class CartLineItemTest {
         CartLineItem item = new CartLineItem(menuId, options, 1);
         
         // When
-        CartLineItem changedItem = item.changeQuantity(5);
+        item.changeQuantity(5);
         
         // Then
-        assertThat(changedItem.getQuantity()).isEqualTo(5);
-        assertThat(changedItem.getMenuId()).isEqualTo(menuId);
-        assertThat(changedItem.getSelectedOptions()).containsExactlyElementsOf(options);
-        
-        // 원본은 변경되지 않음 (불변성)
-        assertThat(item.getQuantity()).isEqualTo(1);
+        assertThat(item.getQuantity()).isEqualTo(5);
+        assertThat(item.getMenuId()).isEqualTo(menuId);
+        assertThat(item.getSelectedOptions()).containsExactlyElementsOf(options);
     }
 }

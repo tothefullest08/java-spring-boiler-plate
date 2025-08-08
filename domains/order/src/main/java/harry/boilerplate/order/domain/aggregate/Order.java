@@ -1,7 +1,13 @@
-package harry.boilerplate.order.domain;
+package harry.boilerplate.order.domain.aggregate;
 
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.order.domain.event.OrderPlacedEvent;
+import harry.boilerplate.order.domain.entity.CartLineItem;
+import harry.boilerplate.order.domain.entity.OrderLineItem;
+import harry.boilerplate.order.domain.valueObject.*;
+import harry.boilerplate.order.domain.exception.OrderDomainException;
+import harry.boilerplate.order.domain.exception.OrderErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,8 +50,13 @@ public class Order extends AggregateRoot<Order, OrderId> {
         this.totalPrice = calculateTotalPrice();
         this.orderTime = LocalDateTime.now();
         
-        // 도메인 이벤트 발행 (향후 구현)
-        // addDomainEvent(new OrderPlacedEvent(this.id.getValue(), this.userId.getValue(), this.shopId.getValue(), this.totalPrice));
+        // 도메인 이벤트 발행
+        addDomainEvent(new OrderPlacedEvent(
+            this.id.getValue(), 
+            this.userId.getValue(), 
+            this.shopId.getValue(), 
+            this.totalPrice.getAmount()
+        ));
     }
     
     // 기존 주문 복원 (Repository용)

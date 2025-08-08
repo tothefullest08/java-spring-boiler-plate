@@ -1,9 +1,10 @@
 package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.shop.application.command.dto.OpenMenuCommand;
-import harry.boilerplate.shop.domain.Menu;
-import harry.boilerplate.shop.domain.MenuId;
-import harry.boilerplate.shop.domain.MenuRepository;
+import harry.boilerplate.shop.domain.aggregate.Menu;
+import harry.boilerplate.shop.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.domain.valueObject.MenuId;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,12 @@
-package harry.boilerplate.order.domain;
+package harry.boilerplate.order.domain.aggregate;
 
 import harry.boilerplate.common.domain.entity.AggregateRoot;
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.order.domain.event.CartItemAddedEvent;
+import harry.boilerplate.order.domain.entity.CartLineItem;
+import harry.boilerplate.order.domain.valueObject.*;
+import harry.boilerplate.order.domain.exception.CartDomainException;
+import harry.boilerplate.order.domain.exception.CartErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,8 +89,14 @@ public class Cart extends AggregateRoot<Cart, CartId> {
             items.add(newItem);
         }
         
-        // 도메인 이벤트 발행 (향후 구현)
-        // addDomainEvent(new CartItemAddedEvent(this.id.getValue(), this.userId.getValue(), menuId.getValue(), quantity));
+        // 도메인 이벤트 발행
+        addDomainEvent(new CartItemAddedEvent(
+            this.id.getValue(), 
+            this.userId.getValue(), 
+            this.shopId != null ? this.shopId.getValue() : null,
+            menuId.getValue(), 
+            quantity
+        ));
     }
     
     /**

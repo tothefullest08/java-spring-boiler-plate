@@ -52,6 +52,25 @@ java-spring-boiler-plate/
 │   ├── order/         # Order Context 독립 프로젝트  
 │   │   ├── build.gradle
 │   │   ├── src/main/java/harry/boilerplate/order/
+│   │   │   └── domain/
+│   │   │       ├── aggregate/     # 애그리게이트 루트들
+│   │   │       │   ├── Order.java
+│   │   │       │   ├── Cart.java
+│   │   │       │   ├── OrderDomainException.java
+│   │   │       │   ├── CartDomainException.java
+│   │   │       │   ├── OrderErrorCode.java
+│   │   │       │   └── CartErrorCode.java
+│   │   │       ├── valueobject/   # 값 객체들
+│   │   │       │   ├── OrderId.java
+│   │   │       │   ├── CartId.java
+│   │   │       │   ├── UserId.java
+│   │   │       │   ├── ShopId.java
+│   │   │       │   ├── MenuId.java
+│   │   │       │   ├── OptionId.java
+│   │   │       ├── entity/        # 도메인 엔티티들
+│   │   │       │   ├── OrderLineItem.java
+│   │   │       │   └── CartLineItem.java
+│   │   │       └── event/         # 도메인 이벤트들 (향후 추가)
 │   │   └── src/main/resources/application-order.yml
 │   └── user/          # User Context 독립 프로젝트
 │       ├── build.gradle
@@ -218,8 +237,8 @@ public abstract class ValueObject {
 // ✅ 디렉토리 분류 규칙
 domains/shop/src/main/java/harry/boilerplate/shop/domain/
 ├── aggregate/     # 애그리게이트 루트 + Repository + Exception + ErrorCode
-├── entity/        # 도메인 엔티티 (DomainEntity 상속)
-├── valueobject/   # 값 객체 (ValueObject 상속, ID 클래스 포함)
+├── entity/        # 도메인 엔티티 (DomainEntity 상속) - OptionGroup, CartLineItem, OrderLineItem
+├── valueobject/   # 값 객체 (ValueObject 상속, ID 클래스 포함) - Option, 모든 ID 클래스
 └── event/         # 도메인 이벤트
 
 // ❌ 금지: JPA 엔티티와 도메인 엔티티 분리
@@ -512,6 +531,102 @@ public class CommandResultResponse {
 }
 ```
 
+## 파일 위치 변경 시 필수 절차 (절대 준수)
+
+### 🚨 CRITICAL: 파일 이동/삭제 시 Import 문 수정 규칙 🚨
+
+**파일 위치를 변경하거나 삭제할 때 반드시 지켜야 하는 절차입니다.**
+
+#### 1단계: 영향받는 파일 검색 (필수)
+```bash
+# 이동/삭제할 클래스를 import하는 모든 파일 검색
+grep -r "import.*패키지명.클래스명" domains/
+grep -r "클래스명" domains/ --include="*.java"
+```
+
+#### 2단계: Import 문 일괄 수정 (필수)
+```bash
+# 예시: CartLineItem을 valueobject에서 entity로 이동하는 경우
+# 1. 검색: CartLineItem을 import하는 모든 파일 찾기
+grep -r "import.*CartLineItem" domains/
+
+# 2. 수정: 각 파일의 import 문을 새 경로로 변경
+# OLD: import harry.boilerplate.order.domain.valueobject.CartLineItem;
+# NEW: import harry.boilerplate.order.domain.entity.CartLineItem;
+```
+
+#### 3단계: 컴파일 검증 (필수)
+```bash
+# 각 컨텍스트별로 컴파일 테스트 실행
+./gradlew :domains:shop:compileJava
+./gradlew :domains:order:compileJava
+./gradlew :domains:user:compileJava
+```
+
+#### 4단계: 테스트 검증 (필수)
+```bash
+# 각 컨텍스트별로 테스트 실행
+./gradlew :domains:shop:test
+./gradlew :domains:order:test
+./gradlew :domains:user:test
+```
+
+### 📋 파일 이동 체크리스트 (필수)
+
+#### ✅ 이동 전 확인사항
+- [ ] 이동할 파일을 import하는 모든 파일 목록 작성
+- [ ] 테스트 파일에서의 import 문도 포함하여 확인
+- [ ] infrastructure, application 레이어에서의 사용 여부 확인
+
+#### ✅ 이동 중 작업사항
+- [ ] 새 위치에 파일 생성 (패키지명 수정)
+- [ ] 모든 import 문을 새 경로로 일괄 수정
+- [ ] 기존 파일 삭제
+
+#### ✅ 이동 후 검증사항
+- [ ] 컴파일 에러 없음 확인
+- [ ] 테스트 통과 확인
+- [ ] IDE에서 "Find Usages" 기능으로 누락 확인
+
+### 🔍 Import 문 수정 대상 파일 유형
+
+#### 반드시 확인해야 할 파일들
+1. **도메인 레이어**
+   - `domains/*/domain/aggregate/*.java`
+   - `domains/*/domain/entity/*.java`
+   - `domains/*/domain/valueobject/*.java`
+
+2. **애플리케이션 레이어**
+   - `domains/*/application/command/handler/*.java`
+   - `domains/*/application/query/handler/*.java`
+
+3. **인프라스트럭처 레이어**
+   - `domains/*/infrastructure/command/*.java`
+   - `domains/*/infrastructure/query/*.java`
+
+4. **테스트 파일**
+   - `domains/*/test/java/**/*Test.java`
+
+### ⚠️ 자주 놓치는 Import 문 위치
+
+#### 숨겨진 의존성 확인
+```java
+// 1. 메서드 파라미터에서 사용
+public void method(CartLineItem item) { }
+
+// 2. 제네릭 타입에서 사용
+List<CartLineItem> items = new ArrayList<>();
+
+// 3. 정적 메서드 호출에서 사용
+CartLineItem.fromCart(cart);
+
+// 4. 애노테이션에서 사용
+@JsonDeserialize(as = CartLineItem.class)
+
+// 5. 예외 처리에서 사용
+} catch (CartLineItemException e) {
+```
+
 ## 금지 사항 (절대 금지)
 
 ### 애그리게이트 경계 위반
@@ -678,4 +793,29 @@ void 메뉴_생성_실패_ErrorCode_확인() {
     
     assertThat(exception.getErrorCode().getCode()).isEqualTo("MENU-DOMAIN-003");
 }
-```
+```##
+ 🔧 리팩토링 중 테스트 실패 시 대응 방법
+
+### 테스트 실패 발생 시 즉시 수행할 작업
+1. **실패 원인 분석**: 컴파일 에러 vs 로직 에러 vs Import 문 누락
+2. **패턴별 해결**: Value Object ↔ Entity 변환, 메서드 시그니처 변경 등
+3. **체계적 수정**: tech.md의 "리팩토링 중 테스트 실패 해결 가이드" 참조
+4. **반복 검증**: 수정 → 테스트 → 실패 시 1단계부터 반복
+
+### 자주 발생하는 실패 패턴
+- **Import 문 누락**: 파일 이동 시 테스트 파일 import 경로 미수정
+- **메서드 반환 타입 변경**: VO→Entity 변환 시 불변성→가변성 변경
+- **동등성 비교 변경**: 값 기반 비교 → ID 기반 비교 변경
+- **생성자 시그니처 변경**: 클래스 구조 변경으로 인한 파라미터 변경
+
+### 📋 빠른 해결 체크리스트
+- [ ] `grep -r "클래스명" domains/` 로 모든 사용처 확인
+- [ ] 테스트 파일 import 문 수정
+- [ ] VO→Entity 변환 시 테스트 로직 수정 (불변성→가변성)
+- [ ] 컴파일 → 테스트 → 성공 시까지 반복
+
+### 🎯 완료 기준
+- [ ] 모든 컨텍스트 컴파일 성공: `./gradlew compileJava`
+- [ ] 모든 테스트 통과: `./gradlew test`
+- [ ] Import 문 누락 없음: `grep -r "cannot find symbol" build/`
+- [ ] 문서 업데이트 완료

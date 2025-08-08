@@ -3,9 +3,11 @@ package harry.boilerplate.shop.domain.entity;
 import harry.boilerplate.common.domain.entity.DomainEntity;
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.aggregate.MenuDomainException;
-import harry.boilerplate.shop.domain.aggregate.MenuErrorCode;
-import harry.boilerplate.shop.domain.valueobject.*;
+
+import harry.boilerplate.shop.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.domain.exception.MenuErrorCode;
+import harry.boilerplate.shop.domain.valueObject.Option;
+import harry.boilerplate.shop.domain.valueObject.OptionGroupId;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -54,6 +56,21 @@ public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
         }
         
         this.menu = menu;
+        this.id = id.getValue();
+        this.name = name.trim();
+        this.required = required;
+        this.options = new ArrayList<>();
+    }
+    
+    // 테스트용 생성자 (Menu 없이 생성)
+    public OptionGroup(OptionGroupId id, String name, boolean required) {
+        if (id == null) {
+            throw new MenuDomainException(MenuErrorCode.OPTION_GROUP_ID_REQUIRED);
+        }
+        if (name == null || name.trim().isEmpty()) {
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_GROUP_NAME_REQUIRED);
+        }
+        
         this.id = id.getValue();
         this.name = name.trim();
         this.required = required;
@@ -126,13 +143,26 @@ public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
         
-        Option targetOption = options.stream()
-            .filter(option -> option.getName().equals(currentName.trim()) && 
-                             option.getPrice().equals(currentPrice))
-            .findFirst()
-            .orElseThrow(() -> new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND));
+        // 기존 옵션 찾기
+        int targetIndex = -1;
+        Option targetOption = null;
+        for (int i = 0; i < options.size(); i++) {
+            Option option = options.get(i);
+            if (option.getName().equals(currentName.trim()) && 
+                option.getPrice().equals(currentPrice)) {
+                targetIndex = i;
+                targetOption = option;
+                break;
+            }
+        }
         
-        targetOption.changeName(newName);
+        if (targetOption == null) {
+            throw new MenuDomainException(MenuErrorCode.OPTION_NOT_FOUND);
+        }
+        
+        // Value Object이므로 새로운 인스턴스로 교체
+        Option newOption = targetOption.changeName(newName);
+        options.set(targetIndex, newOption);
     }
     
     /**

@@ -1,29 +1,31 @@
-package harry.boilerplate.shop.domain.valueobject;
+package harry.boilerplate.shop.domain.valueObject;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.common.domain.entity.ValueObject;
-import harry.boilerplate.shop.domain.aggregate.MenuDomainException;
-import harry.boilerplate.shop.domain.aggregate.MenuErrorCode;
+import harry.boilerplate.shop.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.domain.exception.MenuErrorCode;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.util.List;
 
 /**
- * 옵션 값 객체
- * 옵션그룹 내의 개별 옵션을 나타냄
+ * 메뉴 옵션 값 객체
+ * 불변 객체로 구현
  */
 @Embeddable
 public class Option extends ValueObject {
     
-    @Column(name = "option_name", nullable = false)
+    @Column(name = "option_name")
     private String name;
     
-    @Column(name = "option_price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal price;
+    @Embedded
+    private Money price;
     
     protected Option() {
-        // JPA 기본 생성자
+        // JPA용 기본 생성자
     }
     
     public Option(String name, Money price) {
@@ -38,57 +40,49 @@ public class Option extends ValueObject {
         }
         
         this.name = name.trim();
-        this.price = price.getAmount();
+        this.price = price;
     }
     
     /**
-     * 옵션 이름 변경
+     * 옵션 이름 변경 (새 인스턴스 반환)
      */
     public Option changeName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {
             throw new MenuDomainException(MenuErrorCode.NEW_OPTION_NAME_REQUIRED);
         }
-        return new Option(newName, Money.of(this.price));
+        return new Option(newName, this.price);
     }
     
     /**
-     * 옵션 가격 변경
+     * 옵션 가격 변경 (새 인스턴스 반환)
      */
     public Option changePrice(Money newPrice) {
         if (newPrice == null) {
-            throw new MenuDomainException(MenuErrorCode.CURRENT_OPTION_PRICE_REQUIRED);
+            throw new MenuDomainException(MenuErrorCode.NEW_OPTION_PRICE_REQUIRED);
         }
         return new Option(this.name, newPrice);
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public Money getPrice() {
+        return price;
     }
     
     /**
      * 유료 옵션인지 확인
      */
     public boolean isPaid() {
-        return price.compareTo(BigDecimal.ZERO) > 0;
+        return price != null && price.getAmount().compareTo(BigDecimal.ZERO) > 0;
     }
     
     /**
      * 무료 옵션인지 확인
      */
     public boolean isFree() {
-        return price.compareTo(BigDecimal.ZERO) == 0;
-    }
-    
-    // Getters
-    public String getName() {
-        return name;
-    }
-    
-    public Money getPrice() {
-        return Money.of(price);
-    }
-    
-    @Override
-    protected boolean equalsByValue(Object other) {
-        Option option = (Option) other;
-        return Objects.equals(name, option.name) && 
-               Objects.equals(price, option.price);
+        return !isPaid();
     }
     
     @Override
@@ -97,10 +91,17 @@ public class Option extends ValueObject {
     }
     
     @Override
+    protected boolean equalsByValue(Object other) {
+        Option that = (Option) other;
+        return java.util.Objects.equals(this.name, that.name) &&
+               java.util.Objects.equals(this.price, that.price);
+    }
+    
+    @Override
     public String toString() {
         return "Option{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                '}';
+               "name='" + name + '\'' +
+               ", price=" + price +
+               '}';
     }
 }

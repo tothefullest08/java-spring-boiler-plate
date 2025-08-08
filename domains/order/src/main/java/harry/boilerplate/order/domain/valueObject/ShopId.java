@@ -1,11 +1,11 @@
-package harry.boilerplate.shop.domain.valueObject;
+package harry.boilerplate.order.domain.valueObject;
 
 import harry.boilerplate.common.domain.entity.EntityId;
 
 import java.util.UUID;
 
 /**
- * Shop 애그리게이트의 식별자
+ * Shop의 식별자 (Order Context에서 사용)
  */
 public class ShopId extends EntityId {
     

@@ -25,13 +25,46 @@ inclusion: always
    ```
    다음 명령어를 실행해서 테스트가 정상적으로 통과하는지 확인해주세요:
    
-   ./gradlew :domains:shop:test --tests MenuTest
+   ./gradlew :domains:shop:test --tests MenuTest --info
    
    테스트 결과를 알려주시면 다음 단계로 진행하겠습니다!
    ```
 3. **사용자 명령어 실행 및 결과 보고**
 4. **테스트 통과 시만 다음 task 진행**
 5. **테스트 실패 시 문제 해결 후 2번부터 반복**
+
+### 🔍 테스트 명령어 규칙 (필수)
+**모든 테스트 명령어에는 반드시 `--info` 옵션을 포함해야 함:**
+
+#### ✅ 올바른 테스트 명령어 예시:
+```bash
+# 전체 컨텍스트 테스트
+./gradlew :domains:shop:test --info
+./gradlew :domains:order:test --info
+./gradlew :domains:user:test --info
+
+# 특정 테스트 클래스
+./gradlew :domains:shop:test --tests MenuTest --info
+
+# 특정 테스트 메서드
+./gradlew :domains:shop:test --tests MenuTest.메뉴_생성_성공 --info
+
+# 전체 프로젝트 테스트
+./gradlew test --info
+```
+
+#### ❌ 금지된 테스트 명령어:
+```bash
+# --info 옵션 없는 명령어는 절대 금지
+./gradlew :domains:shop:test
+./gradlew test
+```
+
+#### 📋 --info 옵션의 장점:
+- ✅ **테스트 실패 시 에러 메시지가 터미널에 직접 출력**
+- ✅ **어떤 테스트가 실패했는지 명확하게 확인 가능**
+- ✅ **실패 원인을 바로 파악하여 빠른 문제 해결**
+- ✅ **스택트레이스와 상세한 디버깅 정보 제공**
 
 ### 📝 응답 언어 규칙
 - **모든 AI 응답은 반드시 한글로 작성**

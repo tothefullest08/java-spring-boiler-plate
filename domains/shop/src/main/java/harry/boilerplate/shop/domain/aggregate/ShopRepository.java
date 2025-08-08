@@ -1,6 +1,6 @@
 package harry.boilerplate.shop.domain.aggregate;
 
-import harry.boilerplate.shop.domain.valueobject.*;
+import harry.boilerplate.shop.domain.valueObject.*;
 
 /**
  * Shop 애그리게이트 Repository 인터페이스

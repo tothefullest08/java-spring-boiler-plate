@@ -2,9 +2,10 @@ package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.shop.application.command.dto.UpdateShopCommand;
-import harry.boilerplate.shop.domain.Shop;
-import harry.boilerplate.shop.domain.ShopId;
-import harry.boilerplate.shop.domain.ShopRepository;
+import harry.boilerplate.shop.domain.aggregate.Shop;
+import harry.boilerplate.shop.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.domain.valueObject.ShopId;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

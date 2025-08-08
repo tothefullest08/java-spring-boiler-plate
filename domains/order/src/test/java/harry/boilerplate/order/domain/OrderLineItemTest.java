@@ -1,6 +1,10 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.order.domain.entity.CartLineItem;
+import harry.boilerplate.order.domain.entity.OrderLineItem;
+import harry.boilerplate.order.domain.valueObject.*;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

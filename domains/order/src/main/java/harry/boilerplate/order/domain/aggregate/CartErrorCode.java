@@ -1,4 +1,4 @@
-package harry.boilerplate.order.domain;
+package harry.boilerplate.order.domain.aggregate;
 
 import harry.boilerplate.common.exception.ErrorCode;
 

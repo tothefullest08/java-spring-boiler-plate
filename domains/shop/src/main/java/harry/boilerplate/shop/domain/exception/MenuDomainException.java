@@ -1,26 +1,26 @@
-package harry.boilerplate.order.domain;
+package harry.boilerplate.shop.domain.exception;
 
 import harry.boilerplate.common.exception.DomainException;
 import harry.boilerplate.common.exception.ErrorCode;
 
 /**
- * Order 도메인 예외
+ * Menu 도메인 예외
  */
-public class OrderDomainException extends DomainException {
+public class MenuDomainException extends DomainException {
     
-    private final OrderErrorCode errorCode;
+    private final MenuErrorCode errorCode;
     
-    public OrderDomainException(OrderErrorCode errorCode) {
+    public MenuDomainException(MenuErrorCode errorCode) {
         super(errorCode.getMessage(), null);
         this.errorCode = errorCode;
     }
     
-    public OrderDomainException(OrderErrorCode errorCode, String additionalMessage) {
+    public MenuDomainException(MenuErrorCode errorCode, String additionalMessage) {
         super(errorCode.getMessage() + ": " + additionalMessage, null);
         this.errorCode = errorCode;
     }
     
-    public OrderDomainException(OrderErrorCode errorCode, Throwable cause) {
+    public MenuDomainException(MenuErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }

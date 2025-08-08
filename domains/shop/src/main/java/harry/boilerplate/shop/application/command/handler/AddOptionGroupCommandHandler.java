@@ -1,15 +1,12 @@
 package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.shop.application.command.dto.AddOptionGroupCommand;
-import harry.boilerplate.shop.domain.Menu;
-import harry.boilerplate.shop.domain.MenuId;
-import harry.boilerplate.shop.domain.MenuRepository;
-import harry.boilerplate.shop.domain.OptionGroup;
-import harry.boilerplate.shop.domain.OptionGroupId;
+import harry.boilerplate.shop.domain.aggregate.Menu;
+import harry.boilerplate.shop.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.domain.valueObject.MenuId;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 
 /**
  * 옵션 그룹 추가 Command Handler
@@ -35,20 +32,17 @@ public class AddOptionGroupCommandHandler {
         MenuId menuId = new MenuId(command.getMenuId());
         Menu menu = menuRepository.findById(menuId);
         
-        // 옵션 그룹 생성 (빈 옵션 리스트로 시작)
-        OptionGroup optionGroup = new OptionGroup(
-            new OptionGroupId(),
-            command.getName(),
-            command.getIsRequired(),
-            new ArrayList<>()
-        );
-        
-        // 메뉴에 옵션 그룹 추가 (도메인 로직에서 중복 검증)
-        menu.addOptionGroup(optionGroup);
+        // 메뉴에 옵션 그룹 추가 (도메인 로직에서 중복 검증 및 OptionGroup 생성)
+        menu.addOptionGroup(command.getName(), command.getIsRequired());
         
         // 저장
         menuRepository.save(menu);
         
-        return optionGroup.getId().getValue();
+        // 추가된 옵션그룹의 ID를 반환하기 위해 마지막 추가된 옵션그룹을 찾음
+        return menu.getOptionGroups().stream()
+            .filter(og -> og.getName().equals(command.getName()))
+            .findFirst()
+            .map(og -> og.getId().getValue())
+            .orElseThrow(() -> new RuntimeException("옵션그룹 추가 실패"));
     }
 }
