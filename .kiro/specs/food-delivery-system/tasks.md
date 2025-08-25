@@ -201,18 +201,18 @@
     - 사용자별 장바구니/주문 조회 API 구현
     - _Requirements: 5.5, 6.3, 9.2_
 
-- [ ] 16. User Context 구현
-  - [ ] 16.1 User 도메인 모델 구현
+- [-] 16. User Context 구현
+  - [x] 16.1 User 도메인 모델 구현
     - User 엔티티와 UserId ValueObject 작성
     - 사용자 유효성 검증 로직 구현
     - _Requirements: 7.1, 7.2_
   
-  - [ ] 16.2 User Context 인프라스트럭처 구현
+  - [x] 16.2 User Context 인프라스트럭처 구현
     - User JPA 엔티티 매핑 및 Repository 구현
     - UserQueryDao 구현
     - _Requirements: 7.3, 7.4_
   
-  - [ ] 16.3 User Context 애플리케이션 및 API 구현
+  - [x] 16.3 User Context 애플리케이션 및 API 구현
     - User Command/Query Handler 작성
     - User Command/Query Controller 구현
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
