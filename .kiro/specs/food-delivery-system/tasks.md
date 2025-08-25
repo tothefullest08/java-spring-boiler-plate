@@ -190,13 +190,13 @@
     - Read Model 생성 및 반환 로직 구현
     - _Requirements: 5.5, 6.3_
 
-- [ ] 15. Order Context API 레이어 구현
-  - [ ] 15.1 Command Controller 구현
+- [x] 15. Order Context API 레이어 구현
+  - [x] 15.1 Command Controller 구현
     - CartCommandController (POST, PUT 엔드포인트) 작성
     - OrderCommandController (POST 엔드포인트) 작성
     - _Requirements: 5.1, 6.1, 9.1_
   
-  - [ ] 15.2 Query Controller 구현
+  - [x] 15.2 Query Controller 구현
     - CartQueryController, OrderQueryController (GET 엔드포인트) 작성
     - 사용자별 장바구니/주문 조회 API 구현
     - _Requirements: 5.5, 6.3, 9.2_
