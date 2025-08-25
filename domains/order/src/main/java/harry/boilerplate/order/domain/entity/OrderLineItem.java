@@ -2,8 +2,10 @@ package harry.boilerplate.order.domain.entity;
 
 import harry.boilerplate.common.domain.entity.DomainEntity;
 import harry.boilerplate.common.domain.entity.Money;
+import harry.boilerplate.order.domain.aggregate.Order;
 import harry.boilerplate.order.domain.valueObject.MenuId;
 import harry.boilerplate.order.domain.valueObject.OptionId;
+import harry.boilerplate.order.domain.valueObject.SelectedOption;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -22,6 +24,10 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
     @Column(name = "menu_id", nullable = false, columnDefinition = "VARCHAR(36)")
     private String menuId;
 
@@ -29,14 +35,11 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
     private String menuName;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "order_line_item_options", joinColumns = @JoinColumn(name = "order_line_item_id"))
-    @Column(name = "option_id", columnDefinition = "VARCHAR(36)")
-    private List<String> selectedOptionIds;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "order_line_item_option_names", joinColumns = @JoinColumn(name = "order_line_item_id"))
-    @Column(name = "option_name")
-    private List<String> selectedOptionNames;
+    @CollectionTable(
+        name = "order_item_selected_option", 
+        joinColumns = @JoinColumn(name = "order_line_item_id")
+    )
+    private List<SelectedOption> selectedOptions;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
@@ -48,8 +51,8 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
     protected OrderLineItem() {
     }
 
-    public OrderLineItem(MenuId menuId, String menuName, List<OptionId> selectedOptions,
-            List<String> selectedOptionNames, int quantity, Money linePrice) {
+    public OrderLineItem(MenuId menuId, String menuName, List<SelectedOption> selectedOptions,
+            int quantity, Money linePrice) {
         if (menuId == null) {
             throw new IllegalArgumentException("메뉴 ID는 필수입니다");
         }
@@ -58,9 +61,6 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         }
         if (selectedOptions == null) {
             throw new IllegalArgumentException("선택된 옵션 목록은 필수입니다");
-        }
-        if (selectedOptionNames == null) {
-            throw new IllegalArgumentException("선택된 옵션 이름 목록은 필수입니다");
         }
         if (quantity <= 0) {
             throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
@@ -72,19 +72,25 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         this.id = UUID.randomUUID().toString();
         this.menuId = menuId.getValue();
         this.menuName = menuName.trim();
-        this.selectedOptionIds = selectedOptions.stream()
-                .map(OptionId::getValue)
-                .toList();
-        this.selectedOptionNames = List.copyOf(selectedOptionNames);
+        this.selectedOptions = List.copyOf(selectedOptions);
         this.quantity = quantity;
         this.linePrice = linePrice.getAmount();
+    }
+
+    public OrderLineItem(Order order, MenuId menuId, String menuName, List<SelectedOption> selectedOptions,
+                          int quantity, Money linePrice) {
+        this(menuId, menuName, selectedOptions, quantity, linePrice);
+        if (order == null) {
+            throw new IllegalArgumentException("Order는 필수입니다");
+        }
+        this.order = order;
     }
 
     /**
      * CartLineItem으로부터 OrderLineItem 생성
      */
     public static OrderLineItem fromCartLineItem(CartLineItem cartItem, String menuName,
-            List<String> optionNames, Money unitPrice) {
+            List<SelectedOption> selectedOptions, Money unitPrice) {
         if (cartItem == null) {
             throw new IllegalArgumentException("장바구니 아이템은 필수입니다");
         }
@@ -97,8 +103,7 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         return new OrderLineItem(
                 cartItem.getMenuId(),
                 menuName,
-                cartItem.getSelectedOptions(),
-                optionNames != null ? optionNames : List.of(),
+                selectedOptions != null ? selectedOptions : List.of(),
                 cartItem.getQuantity(),
                 linePrice);
     }
@@ -123,14 +128,14 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         return menuName;
     }
 
-    public List<OptionId> getSelectedOptions() {
-        return selectedOptionIds.stream()
-                .map(OptionId::of)
-                .toList();
+    public List<SelectedOption> getSelectedOptions() {
+        return List.copyOf(selectedOptions);
     }
 
     public List<String> getSelectedOptionNames() {
-        return List.copyOf(selectedOptionNames);
+        return selectedOptions.stream()
+                .map(SelectedOption::getOptionName)
+                .toList();
     }
 
     public int getQuantity() {
@@ -147,8 +152,7 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
                 "id='" + id + '\'' +
                 ", menuId='" + menuId + '\'' +
                 ", menuName='" + menuName + '\'' +
-                ", selectedOptionIds=" + selectedOptionIds +
-                ", selectedOptionNames=" + selectedOptionNames +
+                ", selectedOptions=" + selectedOptions +
                 ", quantity=" + quantity +
                 ", linePrice=" + linePrice +
                 '}';

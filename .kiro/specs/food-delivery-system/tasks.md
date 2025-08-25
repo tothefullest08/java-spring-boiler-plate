@@ -143,14 +143,14 @@
     - AggregateRoot.addDomainEvent() 메서드 활용
     - _Requirements: 6.1, 5.1_
 
-- [ ] 11. Order Context 외부 API 연동 구현
-  - [ ] 11.1 Shop API Client 구현
+- [x] 11. Order Context 외부 API 연동 구현
+  - [x] 11.1 Shop API Client 구현
     - ShopApiClient 인터페이스 정의
     - RestTemplate 기반 Shop Context API 호출 구현
     - 가게 영업 상태 확인, 메뉴 정보 조회 기능 구현
     - _Requirements: 8.1, 8.2, 8.3, 5.3_
   
-  - [ ] 11.2 User API Client 구현
+  - [x] 11.2 User API Client 구현
     - UserApiClient 인터페이스 정의
     - 사용자 유효성 검증 API 호출 구현
     - _Requirements: 8.4, 5.6_
@@ -161,19 +161,19 @@
   - 장바구니 및 주문 비즈니스 규칙 위반 시 예외 처리 로직 추가
   - _Requirements: 5.6, 6.4_
 
-- [ ] 13. Order Context 인프라스트럭처 레이어 구현
-  - [ ] 13.1 JPA 엔티티 매핑 구현
+- [x] 13. Order Context 인프라스트럭처 레이어 구현
+  - [x] 13.1 JPA 엔티티 매핑 구현
     - Cart, Order JPA 엔티티 클래스 작성
     - CartLineItem, OrderLineItem 임베디드 매핑 구현
     - 선택된 옵션 정보 저장 구조 구현
     - _Requirements: 10.5_
   
-  - [ ] 13.2 Command Repository 구현
+  - [x] 13.2 Command Repository 구현
     - CartRepository, OrderRepository 인터페이스 및 구현체 작성
     - 장바구니 및 주문 CRUD 작업 구현
-    - _Requirements: 9.1, 9.3_
+    - _Requirements: 9.1, 9.3_ 
   
-  - [ ] 13.3 Query DAO 구현
+  - [x] 13.3 Query DAO 구현
     - CartQueryDao, OrderQueryDao 인터페이스 및 구현체 작성
     - 사용자별 장바구니/주문 조회 최적화 쿼리 구현
     - _Requirements: 9.2, 9.4_

@@ -1,6 +1,7 @@
 package harry.boilerplate.order.domain.entity;
 
 import harry.boilerplate.common.domain.entity.DomainEntity;
+import harry.boilerplate.order.domain.aggregate.Cart;
 import harry.boilerplate.order.domain.valueObject.MenuId;
 import harry.boilerplate.order.domain.valueObject.OptionId;
 import jakarta.persistence.*;
@@ -20,11 +21,19 @@ public class CartLineItem extends DomainEntity<CartLineItem, String> {
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", nullable = false)
+    private Cart cart;
+    
+    
     @Column(name = "menu_id", nullable = false, columnDefinition = "VARCHAR(36)")
     private String menuId;
     
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "cart_line_item_options", joinColumns = @JoinColumn(name = "cart_line_item_id"))
+    @CollectionTable(
+        name = "cart_item_selected_option", 
+        joinColumns = @JoinColumn(name = "cart_line_item_id")
+    )
     @Column(name = "option_id", columnDefinition = "VARCHAR(36)")
     private List<String> selectedOptionIds;
     
@@ -53,6 +62,16 @@ public class CartLineItem extends DomainEntity<CartLineItem, String> {
             .toList();
         this.quantity = quantity;
     }
+
+    public CartLineItem(Cart cart, MenuId menuId, List<OptionId> selectedOptions, int quantity) {
+        this(menuId, selectedOptions, quantity);
+        if (cart == null) {
+            throw new IllegalArgumentException("Cart는 필수입니다");
+        }
+        this.cart = cart;
+    }
+
+    // 연관관계의 주인은 CartLineItem(cart_id)
     
     /**
      * 동일한 메뉴와 옵션 조합인지 확인

@@ -7,6 +7,7 @@ import harry.boilerplate.order.domain.entity.CartLineItem;
 import harry.boilerplate.order.domain.valueObject.*;
 import harry.boilerplate.order.domain.exception.CartDomainException;
 import harry.boilerplate.order.domain.exception.CartErrorCode;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,21 @@ import java.util.Optional;
  * Cart 애그리게이트 루트
  * 사용자의 장바구니를 관리하며 단일 가게 규칙을 적용
  */
+@Entity
+@Table(name = "cart")
 public class Cart extends AggregateRoot<Cart, CartId> {
-    
-    private CartId id;
-    private UserId userId;
-    private ShopId shopId;
+
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
+    private String id;
+
+    @Column(name = "user_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String userId;
+
+    @Column(name = "shop_id", columnDefinition = "VARCHAR(36)")
+    private String shopId;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartLineItem> items;
     
     // 기본 생성자 (JPA용)
@@ -33,18 +44,17 @@ public class Cart extends AggregateRoot<Cart, CartId> {
         if (userId == null) {
             throw new IllegalArgumentException("사용자 ID는 필수입니다");
         }
-        
-        this.id = CartId.generate();
-        this.userId = userId;
+        this.id = CartId.generate().getValue();
+        this.userId = userId.getValue();
         this.shopId = null;
         this.items = new ArrayList<>();
     }
     
     // 기존 장바구니 복원 (Repository용)
     public Cart(CartId id, UserId userId, ShopId shopId, List<CartLineItem> items) {
-        this.id = id;
-        this.userId = userId;
-        this.shopId = shopId;
+        this.id = id != null ? id.getValue() : null;
+        this.userId = userId != null ? userId.getValue() : null;
+        this.shopId = shopId != null ? shopId.getValue() : null;
         this.items = new ArrayList<>(items != null ? items : new ArrayList<>());
     }
     
@@ -55,8 +65,7 @@ public class Cart extends AggregateRoot<Cart, CartId> {
         if (newShopId == null) {
             throw new IllegalArgumentException("가게 ID는 필수입니다");
         }
-        
-        this.shopId = newShopId;
+        this.shopId = newShopId.getValue();
         this.items.clear();
     }
     
@@ -71,8 +80,7 @@ public class Cart extends AggregateRoot<Cart, CartId> {
         if (quantity <= 0) {
             throw new CartDomainException(CartErrorCode.INVALID_QUANTITY);
         }
-        
-        CartLineItem newItem = new CartLineItem(menuId, selectedOptions, quantity);
+        CartLineItem newItem = new CartLineItem(this, menuId, selectedOptions, quantity);
         
         // 동일한 메뉴와 옵션 조합이 있는지 확인
         Optional<CartLineItem> existingItem = items.stream()
@@ -91,10 +99,10 @@ public class Cart extends AggregateRoot<Cart, CartId> {
         
         // 도메인 이벤트 발행
         addDomainEvent(new CartItemAddedEvent(
-            this.id.getValue(), 
-            this.userId.getValue(), 
-            this.shopId != null ? this.shopId.getValue() : null,
-            menuId.getValue(), 
+            this.id,
+            this.userId,
+            this.shopId,
+            menuId.getValue(),
             quantity
         ));
     }
@@ -109,9 +117,9 @@ public class Cart extends AggregateRoot<Cart, CartId> {
         }
         
         // 장바구니가 비어있거나 같은 가게인 경우
-        if (this.shopId == null || this.shopId.equals(itemShopId)) {
+        if (this.shopId == null || this.shopId.equals(itemShopId.getValue())) {
             if (this.shopId == null) {
-                this.shopId = itemShopId;
+                this.shopId = itemShopId.getValue();
             }
             addItem(menuId, selectedOptions, quantity);
         } else {
@@ -201,15 +209,15 @@ public class Cart extends AggregateRoot<Cart, CartId> {
     
     @Override
     public CartId getId() {
-        return id;
+        return CartId.of(id);
     }
     
     public UserId getUserId() {
-        return userId;
+        return UserId.of(userId);
     }
     
     public ShopId getShopId() {
-        return shopId;
+        return shopId != null ? ShopId.of(shopId) : null;
     }
     
     public List<CartLineItem> getItems() {

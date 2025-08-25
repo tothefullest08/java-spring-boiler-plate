@@ -8,6 +8,7 @@ import harry.boilerplate.order.domain.entity.OrderLineItem;
 import harry.boilerplate.order.domain.valueObject.*;
 import harry.boilerplate.order.domain.exception.OrderDomainException;
 import harry.boilerplate.order.domain.exception.OrderErrorCode;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,13 +18,27 @@ import java.util.List;
  * Order 애그리게이트 루트
  * 주문 정보와 주문 라인 아이템들을 관리
  */
+@Entity
+@Table(name = "order_table")
 public class Order extends AggregateRoot<Order, OrderId> {
-    
-    private OrderId id;
-    private UserId userId;
-    private ShopId shopId;
+
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(36)")
+    private String id;
+
+    @Column(name = "user_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String userId;
+
+    @Column(name = "shop_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String shopId;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderLineItem> orderItems;
-    private Money totalPrice;
+
+    @Column(name = "total_price", precision = 10, scale = 2, nullable = false)
+    private java.math.BigDecimal totalPrice;
+
+    @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;
     
     // 기본 생성자 (JPA용)
@@ -43,30 +58,42 @@ public class Order extends AggregateRoot<Order, OrderId> {
             throw new OrderDomainException(OrderErrorCode.EMPTY_ORDER_ITEMS);
         }
         
-        this.id = OrderId.generate();
-        this.userId = userId;
-        this.shopId = shopId;
-        this.orderItems = new ArrayList<>(orderItems);
-        this.totalPrice = calculateTotalPrice();
+        this.id = OrderId.generate().getValue();
+        this.userId = userId.getValue();
+        this.shopId = shopId.getValue();
+        // 자식과의 양방향 연관관계를 생성자에서 확정 (setter 사용하지 않음)
+        this.orderItems = new ArrayList<>();
+        for (OrderLineItem item : orderItems) {
+            OrderLineItem attached = new OrderLineItem(
+                this,
+                item.getMenuId(),
+                item.getMenuName(),
+                item.getSelectedOptions(),
+                item.getQuantity(),
+                item.getTotalPrice()
+            );
+            this.orderItems.add(attached);
+        }
+        this.totalPrice = calculateTotalPrice().getAmount();
         this.orderTime = LocalDateTime.now();
         
         // 도메인 이벤트 발행
         addDomainEvent(new OrderPlacedEvent(
-            this.id.getValue(), 
-            this.userId.getValue(), 
-            this.shopId.getValue(), 
-            this.totalPrice.getAmount()
+            this.id,
+            this.userId,
+            this.shopId,
+            this.totalPrice
         ));
     }
     
     // 기존 주문 복원 (Repository용)
     public Order(OrderId id, UserId userId, ShopId shopId, List<OrderLineItem> orderItems, 
                 Money totalPrice, LocalDateTime orderTime) {
-        this.id = id;
-        this.userId = userId;
-        this.shopId = shopId;
+        this.id = id != null ? id.getValue() : null;
+        this.userId = userId != null ? userId.getValue() : null;
+        this.shopId = shopId != null ? shopId.getValue() : null;
         this.orderItems = new ArrayList<>(orderItems != null ? orderItems : new ArrayList<>());
-        this.totalPrice = totalPrice;
+        this.totalPrice = totalPrice != null ? totalPrice.getAmount() : java.math.BigDecimal.ZERO;
         this.orderTime = orderTime;
     }
     
@@ -88,12 +115,12 @@ public class Order extends AggregateRoot<Order, OrderId> {
         // 현재는 기본 구현만 제공
         List<OrderLineItem> orderItems = new ArrayList<>();
         for (CartLineItem cartItem : cart.getItems()) {
-            // 실제 구현에서는 Shop Context API를 통해 메뉴 이름과 옵션 이름, 가격을 조회해야 함
+            // 실제 구현에서는 Shop Context API를 통해 메뉴 이름과 옵션 정보, 가격을 조회해야 함
             String menuName = "메뉴명"; // TODO: Shop Context API 호출
-            List<String> optionNames = List.of(); // TODO: Shop Context API 호출
+            List<SelectedOption> selectedOptions = List.of(); // TODO: Shop Context API 호출하여 SelectedOption 생성
             Money unitPrice = Money.of(10000); // TODO: Shop Context API 호출
             
-            OrderLineItem orderItem = OrderLineItem.fromCartLineItem(cartItem, menuName, optionNames, unitPrice);
+            OrderLineItem orderItem = OrderLineItem.fromCartLineItem(cartItem, menuName, selectedOptions, unitPrice);
             orderItems.add(orderItem);
         }
         
@@ -104,7 +131,7 @@ public class Order extends AggregateRoot<Order, OrderId> {
      * 주문 총 가격 계산
      */
     public Money getPrice() {
-        return totalPrice;
+        return Money.of(totalPrice);
     }
     
     /**
@@ -148,15 +175,15 @@ public class Order extends AggregateRoot<Order, OrderId> {
     
     @Override
     public OrderId getId() {
-        return id;
+        return OrderId.of(id);
     }
     
     public UserId getUserId() {
-        return userId;
+        return UserId.of(userId);
     }
     
     public ShopId getShopId() {
-        return shopId;
+        return ShopId.of(shopId);
     }
     
     public List<OrderLineItem> getOrderItems() {
@@ -164,7 +191,7 @@ public class Order extends AggregateRoot<Order, OrderId> {
     }
     
     public Money getTotalPrice() {
-        return totalPrice;
+        return Money.of(totalPrice);
     }
     
     public LocalDateTime getOrderTime() {
