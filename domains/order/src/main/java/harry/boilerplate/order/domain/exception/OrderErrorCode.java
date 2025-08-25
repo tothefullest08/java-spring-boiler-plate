@@ -21,7 +21,11 @@ public enum OrderErrorCode implements ErrorCode {
     
     // 주문 상태 관련 에러
     ORDER_ALREADY_PLACED("ORDER-DOMAIN-006", "이미 주문이 완료되었습니다"),
-    INVALID_ORDER_STATUS("ORDER-DOMAIN-007", "올바르지 않은 주문 상태입니다");
+    INVALID_ORDER_STATUS("ORDER-DOMAIN-007", "올바르지 않은 주문 상태입니다"),
+    
+    // 외부 API 검증 관련 에러
+    SHOP_NOT_OPEN("ORDER-DOMAIN-010", "가게가 영업 중이 아닙니다"),
+    MINIMUM_ORDER_AMOUNT_NOT_MET("ORDER-DOMAIN-011", "최소 주문금액을 충족하지 않습니다");
     
     private final String code;
     private final String message;

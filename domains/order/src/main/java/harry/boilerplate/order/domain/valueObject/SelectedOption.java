@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * 선택된 옵션 정보를 저장하는 값 객체
@@ -52,6 +53,22 @@ public class SelectedOption extends ValueObject {
     
     public BigDecimal getOptionPrice() {
         return optionPrice;
+    }
+    
+    @Override
+    protected Object[] getEqualityComponents() {
+        return new Object[]{optionId, optionName, optionPrice};
+    }
+    
+    @Override
+    protected boolean equalsByValue(Object other) {
+        if (!(other instanceof SelectedOption)) {
+            return false;
+        }
+        SelectedOption that = (SelectedOption) other;
+        return Objects.equals(this.optionId, that.optionId) &&
+               Objects.equals(this.optionName, that.optionName) &&
+               Objects.equals(this.optionPrice, that.optionPrice);
     }
     
     @Override

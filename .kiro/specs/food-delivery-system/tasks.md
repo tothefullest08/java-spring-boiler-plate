@@ -178,14 +178,14 @@
     - 사용자별 장바구니/주문 조회 최적화 쿼리 구현
     - _Requirements: 9.2, 9.4_
 
-- [ ] 14. Order Context 애플리케이션 레이어 구현
-  - [ ] 14.1 Command Handler 구현
+- [x] 14. Order Context 애플리케이션 레이어 구현
+  - [x] 14.1 Command Handler 구현
     - AddCartItemCommandHandler, PlaceOrderCommandHandler 작성
     - 외부 API 호출을 통한 검증 로직 구현
     - 트랜잭션 처리 및 예외 처리 구현
     - _Requirements: 5.1, 5.2, 5.3, 6.1, 6.2_
   
-  - [ ] 14.2 Query Handler 구현
+  - [x] 14.2 Query Handler 구현
     - CartSummaryQueryHandler, OrderHistoryQueryHandler 작성
     - Read Model 생성 및 반환 로직 구현
     - _Requirements: 5.5, 6.3_
