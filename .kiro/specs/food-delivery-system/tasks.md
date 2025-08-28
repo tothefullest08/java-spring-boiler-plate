@@ -218,13 +218,13 @@
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
 - [ ] 17. 통합 테스트 구현
-  - [ ] 17.1 단위 테스트 작성
+  - [x] 17.1 단위 테스트 작성
     - 각 도메인 모델의 비즈니스 로직 단위 테스트 작성
     - Command/Query Handler 단위 테스트 작성
     - ValueObject 및 예외 처리 테스트 작성
     - _Requirements: 1.1, 2.3, 3.1, 5.1, 6.1_
   
-  - [ ] 17.2 Repository 통합 테스트 작성
+  - [x] 17.2 Repository 통합 테스트 작성
     - Testcontainers를 사용한 MySQL 통합 테스트 작성
     - Repository 구현체 CRUD 작업 테스트 작성
     - _Requirements: 9.1, 9.2_

@@ -59,9 +59,6 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         if (menuName == null || menuName.trim().isEmpty()) {
             throw new IllegalArgumentException("메뉴 이름은 필수입니다");
         }
-        if (selectedOptions == null) {
-            throw new IllegalArgumentException("선택된 옵션 목록은 필수입니다");
-        }
         if (quantity <= 0) {
             throw new IllegalArgumentException("수량은 1개 이상이어야 합니다");
         }
@@ -72,7 +69,7 @@ public class OrderLineItem extends DomainEntity<OrderLineItem, String> {
         this.id = UUID.randomUUID().toString();
         this.menuId = menuId.getValue();
         this.menuName = menuName.trim();
-        this.selectedOptions = List.copyOf(selectedOptions);
+        this.selectedOptions = selectedOptions != null ? List.copyOf(selectedOptions) : List.of();
         this.quantity = quantity;
         this.linePrice = linePrice.getAmount();
     }

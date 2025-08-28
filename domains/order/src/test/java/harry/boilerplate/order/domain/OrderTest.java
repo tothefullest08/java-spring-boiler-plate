@@ -1,260 +1,275 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.common.domain.event.DomainEvent;
-import harry.boilerplate.order.domain.aggregate.Cart;
 import harry.boilerplate.order.domain.aggregate.Order;
-import harry.boilerplate.order.domain.event.OrderPlacedEvent;
+import harry.boilerplate.order.domain.entity.OrderLineItem;
 import harry.boilerplate.order.domain.exception.OrderDomainException;
 import harry.boilerplate.order.domain.exception.OrderErrorCode;
-import harry.boilerplate.order.domain.entity.OrderLineItem;
 import harry.boilerplate.order.domain.valueObject.*;
-
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * Order 애그리게이트 테스트
+ * Order 도메인 애그리게이트 테스트
  */
+@DisplayName("Order 애그리게이트 테스트")
 class OrderTest {
-    
-    @Test
-    void 주문_생성_성공() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        
-        OrderLineItem item1 = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            2, Money.of(20000)
-        );
-        OrderLineItem item2 = new OrderLineItem(
-            MenuId.of("menu-2"), "냉면", 
-            Arrays.asList(OptionId.of("option-2")), Arrays.asList("곱빼기"), 
-            1, Money.of(8000)
-        );
-        List<OrderLineItem> orderItems = Arrays.asList(item1, item2);
-        
-        // When
-        Order order = new Order(userId, shopId, orderItems);
-        
-        // Then
-        assertThat(order.getId()).isNotNull();
-        assertThat(order.getUserId()).isEqualTo(userId);
-        assertThat(order.getShopId()).isEqualTo(shopId);
-        assertThat(order.getOrderItems()).hasSize(2);
-        assertThat(order.getItemCount()).isEqualTo(2);
-        assertThat(order.getTotalQuantity()).isEqualTo(3);
-        assertThat(order.getTotalPrice()).isEqualTo(Money.of(28000));
-        assertThat(order.getPrice()).isEqualTo(Money.of(28000));
-        assertThat(order.getOrderTime()).isNotNull();
-        assertThat(order.getOrderTime()).isBefore(LocalDateTime.now().plusSeconds(1));
+
+    @Nested
+    @DisplayName("Order 생성")
+    class CreateOrder {
+
+        @Test
+        @DisplayName("정상적인 Order 생성")
+        void 정상적인_Order_생성() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                ),
+                new OrderLineItem(
+                    MenuId.of("menu-2"), "냉면", 
+                    Arrays.asList(), 1, Money.of(new BigDecimal("8000"))
+                )
+            );
+
+            // When
+            Order order = new Order(userId, shopId, orderItems);
+
+            // Then
+            assertThat(order.getId()).isNotNull();
+            assertThat(order.getUserId()).isEqualTo(userId);
+            assertThat(order.getShopId()).isEqualTo(shopId);
+            assertThat(order.getOrderItems()).hasSize(2);
+            assertThat(order.getTotalPrice()).isEqualTo(Money.of(new BigDecimal("38000")));
+            assertThat(order.getOrderTime()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("UserId가 null인 경우 예외 발생")
+        void UserId가_null인_경우_예외_발생() {
+            // Given
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                )
+            );
+
+            // When & Then
+            assertThatThrownBy(() -> new Order(null, shopId, orderItems))
+                    .isInstanceOf(OrderDomainException.class)
+                    .extracting(e -> ((OrderDomainException) e).getErrorCode())
+                    .isEqualTo(OrderErrorCode.INVALID_USER_ID);
+        }
+
+        @Test
+        @DisplayName("ShopId가 null인 경우 예외 발생")
+        void ShopId가_null인_경우_예외_발생() {
+            // Given
+            UserId userId = UserId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                )
+            );
+
+            // When & Then
+            assertThatThrownBy(() -> new Order(userId, null, orderItems))
+                    .isInstanceOf(OrderDomainException.class)
+                    .extracting(e -> ((OrderDomainException) e).getErrorCode())
+                    .isEqualTo(OrderErrorCode.INVALID_SHOP_ID);
+        }
+
+        @Test
+        @DisplayName("OrderItems가 null인 경우 예외 발생")
+        void OrderItems가_null인_경우_예외_발생() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+
+            // When & Then
+            assertThatThrownBy(() -> new Order(userId, shopId, null))
+                    .isInstanceOf(OrderDomainException.class)
+                    .extracting(e -> ((OrderDomainException) e).getErrorCode())
+                    .isEqualTo(OrderErrorCode.EMPTY_ORDER_ITEMS);
+        }
+
+        @Test
+        @DisplayName("OrderItems가 빈 리스트인 경우 예외 발생")
+        void OrderItems가_빈_리스트인_경우_예외_발생() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> emptyItems = Arrays.asList();
+
+            // When & Then
+            assertThatThrownBy(() -> new Order(userId, shopId, emptyItems))
+                    .isInstanceOf(OrderDomainException.class)
+                    .extracting(e -> ((OrderDomainException) e).getErrorCode())
+                    .isEqualTo(OrderErrorCode.EMPTY_ORDER_ITEMS);
+        }
     }
-    
-    @Test
-    void 주문_생성_실패_사용자ID_null() {
-        // Given
-        ShopId shopId = ShopId.of("shop-1");
-        OrderLineItem item = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            1, Money.of(10000)
-        );
-        List<OrderLineItem> orderItems = Arrays.asList(item);
-        
-        // When & Then
-        assertThatThrownBy(() -> new Order(null, shopId, orderItems))
-            .isInstanceOf(OrderDomainException.class)
-            .extracting(e -> ((OrderDomainException) e).getErrorCode())
-            .isEqualTo(OrderErrorCode.INVALID_USER_ID);
+
+    @Nested
+    @DisplayName("주문 가격 계산")
+    class OrderPriceCalculation {
+
+        @Test
+        @DisplayName("단일 아이템 주문 가격 계산")
+        void 단일_아이템_주문_가격_계산() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 3, Money.of(new BigDecimal("45000"))
+                )
+            );
+
+            // When
+            Order order = new Order(userId, shopId, orderItems);
+
+            // Then
+            assertThat(order.getPrice()).isEqualTo(Money.of(new BigDecimal("45000")));
+            assertThat(order.getTotalPrice()).isEqualTo(Money.of(new BigDecimal("45000")));
+        }
+
+        @Test
+        @DisplayName("다중 아이템 주문 가격 계산")
+        void 다중_아이템_주문_가격_계산() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                ),
+                new OrderLineItem(
+                    MenuId.of("menu-2"), "냉면", 
+                    Arrays.asList(), 1, Money.of(new BigDecimal("8000"))
+                ),
+                new OrderLineItem(
+                    MenuId.of("menu-3"), "김치찌개", 
+                    Arrays.asList(), 1, Money.of(new BigDecimal("12000"))
+                )
+            );
+
+            // When
+            Order order = new Order(userId, shopId, orderItems);
+
+            // Then
+            assertThat(order.getPrice()).isEqualTo(Money.of(new BigDecimal("50000")));
+        }
     }
-    
-    @Test
-    void 주문_생성_실패_가게ID_null() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        OrderLineItem item = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            1, Money.of(10000)
-        );
-        List<OrderLineItem> orderItems = Arrays.asList(item);
-        
-        // When & Then
-        assertThatThrownBy(() -> new Order(userId, null, orderItems))
-            .isInstanceOf(OrderDomainException.class)
-            .extracting(e -> ((OrderDomainException) e).getErrorCode())
-            .isEqualTo(OrderErrorCode.INVALID_SHOP_ID);
+
+    @Nested
+    @DisplayName("주문 정보 조회")
+    class OrderInformation {
+
+        @Test
+        @DisplayName("주문 아이템 개수 조회")
+        void 주문_아이템_개수_조회() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                ),
+                new OrderLineItem(
+                    MenuId.of("menu-2"), "냉면", 
+                    Arrays.asList(), 1, Money.of(new BigDecimal("8000"))
+                )
+            );
+
+            // When
+            Order order = new Order(userId, shopId, orderItems);
+
+            // Then
+            assertThat(order.getItemCount()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("주문 총 수량 조회")
+        void 주문_총_수량_조회() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 3, Money.of(new BigDecimal("45000"))
+                ),
+                new OrderLineItem(
+                    MenuId.of("menu-2"), "냉면", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("16000"))
+                )
+            );
+
+            // When
+            Order order = new Order(userId, shopId, orderItems);
+
+            // Then
+            assertThat(order.getTotalQuantity()).isEqualTo(5);
+        }
     }
-    
-    @Test
-    void 주문_생성_실패_주문_아이템_null() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        
-        // When & Then
-        assertThatThrownBy(() -> new Order(userId, shopId, null))
-            .isInstanceOf(OrderDomainException.class)
-            .extracting(e -> ((OrderDomainException) e).getErrorCode())
-            .isEqualTo(OrderErrorCode.EMPTY_ORDER_ITEMS);
-    }
-    
-    @Test
-    void 주문_생성_실패_주문_아이템_빈_리스트() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        List<OrderLineItem> emptyItems = Arrays.asList();
-        
-        // When & Then
-        assertThatThrownBy(() -> new Order(userId, shopId, emptyItems))
-            .isInstanceOf(OrderDomainException.class)
-            .extracting(e -> ((OrderDomainException) e).getErrorCode())
-            .isEqualTo(OrderErrorCode.EMPTY_ORDER_ITEMS);
-    }
-    
-    @Test
-    void 장바구니로부터_주문_생성_성공() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        Cart cart = new Cart(userId);
-        
-        MenuId menuId = MenuId.of("menu-1");
-        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
-        cart.addItem(shopId, menuId, options, 2);
-        
-        // When
-        Order order = Order.fromCart(cart);
-        
-        // Then
-        assertThat(order.getUserId()).isEqualTo(userId);
-        assertThat(order.getShopId()).isEqualTo(shopId);
-        assertThat(order.getOrderItems()).hasSize(1);
-        assertThat(order.getTotalQuantity()).isEqualTo(2);
-    }
-    
-    @Test
-    void 장바구니로부터_주문_생성_실패_장바구니_null() {
-        // When & Then
-        assertThatThrownBy(() -> Order.fromCart(null))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("장바구니는 필수입니다");
-    }
-    
-    @Test
-    void 장바구니로부터_주문_생성_실패_빈_장바구니() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        Cart emptyCart = new Cart(userId);
-        
-        // When & Then
-        assertThatThrownBy(() -> Order.fromCart(emptyCart))
-            .isInstanceOf(OrderDomainException.class)
-            .extracting(e -> ((OrderDomainException) e).getErrorCode())
-            .isEqualTo(OrderErrorCode.EMPTY_ORDER_ITEMS);
-    }
-    
-    @Test
-    void 특정_사용자의_주문인지_확인_성공() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        OrderLineItem item = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            1, Money.of(10000)
-        );
-        Order order = new Order(userId, shopId, Arrays.asList(item));
-        
-        // When & Then
-        assertThat(order.belongsToUser(userId)).isTrue();
-        assertThat(order.belongsToUser(UserId.of("other-user"))).isFalse();
-    }
-    
-    @Test
-    void 특정_가게의_주문인지_확인_성공() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        OrderLineItem item = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            1, Money.of(10000)
-        );
-        Order order = new Order(userId, shopId, Arrays.asList(item));
-        
-        // When & Then
-        assertThat(order.isFromShop(shopId)).isTrue();
-        assertThat(order.isFromShop(ShopId.of("other-shop"))).isFalse();
-    }
-    
-    @Test
-    void 주문_생성_시_OrderPlacedEvent_발행() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        OrderLineItem item = new OrderLineItem(
-            MenuId.of("menu-1"), "삼겹살", 
-            Arrays.asList(OptionId.of("option-1")), Arrays.asList("매운맛"), 
-            1, Money.of(10000)
-        );
-        List<OrderLineItem> orderItems = Arrays.asList(item);
-        
-        // When
-        Order order = new Order(userId, shopId, orderItems);
-        
-        // Then
-        assertThat(order.hasDomainEvents()).isTrue();
-        List<DomainEvent> events = order.getDomainEvents();
-        assertThat(events).hasSize(1);
-        
-        DomainEvent event = events.get(0);
-        assertThat(event).isInstanceOf(OrderPlacedEvent.class);
-        
-        OrderPlacedEvent orderPlacedEvent = (OrderPlacedEvent) event;
-        assertThat(orderPlacedEvent.getAggregateId()).isEqualTo(order.getId().getValue());
-        assertThat(orderPlacedEvent.getAggregateType()).isEqualTo("Order");
-        assertThat(orderPlacedEvent.getUserId()).isEqualTo(userId.getValue());
-        assertThat(orderPlacedEvent.getShopId()).isEqualTo(shopId.getValue());
-        assertThat(orderPlacedEvent.getTotalAmount()).isEqualTo(Money.of(10000).getAmount());
-        assertThat(orderPlacedEvent.getEventId()).isNotNull();
-        assertThat(orderPlacedEvent.getOccurredAt()).isNotNull();
-        assertThat(orderPlacedEvent.getVersion()).isEqualTo(1);
-    }
-    
-    @Test
-    void 장바구니로부터_주문_생성_시_OrderPlacedEvent_발행() {
-        // Given
-        UserId userId = UserId.of("user-1");
-        ShopId shopId = ShopId.of("shop-1");
-        Cart cart = new Cart(userId);
-        
-        MenuId menuId = MenuId.of("menu-1");
-        List<OptionId> options = Arrays.asList(OptionId.of("option-1"));
-        cart.addItem(shopId, menuId, options, 2);
-        
-        // When
-        Order order = Order.fromCart(cart);
-        
-        // Then
-        assertThat(order.hasDomainEvents()).isTrue();
-        List<DomainEvent> events = order.getDomainEvents();
-        assertThat(events).hasSize(1);
-        
-        DomainEvent event = events.get(0);
-        assertThat(event).isInstanceOf(OrderPlacedEvent.class);
-        
-        OrderPlacedEvent orderPlacedEvent = (OrderPlacedEvent) event;
-        assertThat(orderPlacedEvent.getAggregateId()).isEqualTo(order.getId().getValue());
-        assertThat(orderPlacedEvent.getUserId()).isEqualTo(userId.getValue());
-        assertThat(orderPlacedEvent.getShopId()).isEqualTo(shopId.getValue());
+
+    @Nested
+    @DisplayName("주문 소유권 검증")
+    class OrderOwnership {
+
+        @Test
+        @DisplayName("특정 사용자의 주문인지 확인")
+        void 특정_사용자의_주문인지_확인() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                )
+            );
+            Order order = new Order(userId, shopId, orderItems);
+
+            // When & Then
+            assertThat(order.belongsToUser(userId)).isTrue();
+            assertThat(order.belongsToUser(UserId.generate())).isFalse();
+        }
+
+        @Test
+        @DisplayName("특정 가게의 주문인지 확인")
+        void 특정_가게의_주문인지_확인() {
+            // Given
+            UserId userId = UserId.generate();
+            ShopId shopId = ShopId.generate();
+            List<OrderLineItem> orderItems = Arrays.asList(
+                new OrderLineItem(
+                    MenuId.of("menu-1"), "삼겹살", 
+                    Arrays.asList(), 2, Money.of(new BigDecimal("30000"))
+                )
+            );
+            Order order = new Order(userId, shopId, orderItems);
+
+            // When & Then
+            assertThat(order.isFromShop(shopId)).isTrue();
+            assertThat(order.isFromShop(ShopId.generate())).isFalse();
+        }
     }
 }

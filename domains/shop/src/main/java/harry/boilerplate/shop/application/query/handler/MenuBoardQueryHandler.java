@@ -30,18 +30,17 @@ public class MenuBoardQueryHandler {
      * @return 메뉴보드 조회 결과
      */
     public MenuBoardResult handle(MenuBoardQuery query) {
-        // 가게 존재 확인
-        if (!shopQueryDao.existsShop(query.getShopId())) {
-            throw new IllegalArgumentException("존재하지 않는 가게입니다: " + query.getShopId());
+        if (query == null) {
+            throw new IllegalArgumentException("MenuBoardQuery는 필수입니다");
         }
         
-        try {
-            // 메뉴보드 조회
-            MenuBoardViewModel viewModel = menuQueryDao.getMenuBoard(query.getShopId());
-            return MenuBoardResult.from(viewModel);
-        } catch (Exception e) {
-            // 가게에 메뉴가 없는 경우 빈 결과 반환
-            return MenuBoardResult.empty(query.getShopId());
+        // 메뉴보드 조회
+        MenuBoardViewModel viewModel = menuQueryDao.getMenuBoard(query.getShopId());
+        
+        if (viewModel == null) {
+            return null;
         }
+        
+        return MenuBoardResult.from(viewModel);
     }
 }

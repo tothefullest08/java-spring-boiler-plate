@@ -163,14 +163,20 @@ public class Order extends AggregateRoot<Order, OrderId> {
      * 특정 사용자의 주문인지 확인
      */
     public boolean belongsToUser(UserId userId) {
-        return this.userId.equals(userId);
+        if (userId == null) {
+            return false;
+        }
+        return this.userId.equals(userId.getValue());
     }
     
     /**
      * 특정 가게의 주문인지 확인
      */
     public boolean isFromShop(ShopId shopId) {
-        return this.shopId.equals(shopId);
+        if (shopId == null) {
+            return false;
+        }
+        return this.shopId.equals(shopId.getValue());
     }
     
     @Override
