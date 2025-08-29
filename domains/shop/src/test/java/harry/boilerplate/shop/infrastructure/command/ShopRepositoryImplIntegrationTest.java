@@ -1,9 +1,9 @@
 package harry.boilerplate.shop.infrastructure.command;
 
-import harry.boilerplate.shop.domain.aggregate.Shop;
-import harry.boilerplate.shop.domain.aggregate.ShopRepository;
-import harry.boilerplate.shop.domain.valueObject.ShopId;
-import harry.boilerplate.shop.domain.valueObject.BusinessHours;
+import harry.boilerplate.shop.command.domain.aggregate.Shop;
+import harry.boilerplate.shop.command.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.command.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.domain.valueObject.BusinessHours;
 import harry.boilerplate.common.domain.entity.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(ShopRepositoryImpl.class)
+@Import(harry.boilerplate.shop.command.infrastructure.repository.ShopRepositoryImpl.class)
 class ShopRepositoryImplIntegrationTest {
 
     @Container
@@ -150,7 +150,7 @@ class ShopRepositoryImplIntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> shopRepository.findById(nonExistentId))
-                .isInstanceOf(ShopNotFoundException.class);
+                .isInstanceOf(harry.boilerplate.shop.command.infrastructure.repository.ShopNotFoundException.class);
     }
 
     @Test

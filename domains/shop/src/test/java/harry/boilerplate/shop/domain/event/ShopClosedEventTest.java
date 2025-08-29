@@ -1,5 +1,7 @@
 package harry.boilerplate.shop.domain.event;
 
+import harry.boilerplate.shop.command.domain.event.ShopClosedEvent;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

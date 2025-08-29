@@ -1,9 +1,9 @@
 package harry.boilerplate.shop.infrastructure.command;
 
-import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.aggregate.MenuRepository;
-import harry.boilerplate.shop.domain.aggregate.Shop;
-import harry.boilerplate.shop.domain.valueObject.*;
+import harry.boilerplate.shop.command.domain.aggregate.Menu;
+import harry.boilerplate.shop.command.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.command.domain.aggregate.Shop;
+import harry.boilerplate.shop.command.domain.valueObject.*;
 import harry.boilerplate.common.domain.entity.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import harry.boilerplate.shop.domain.entity.OptionGroup;
+import harry.boilerplate.shop.command.domain.entity.OptionGroup;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(MenuRepositoryImpl.class)
+@Import(harry.boilerplate.shop.command.infrastructure.repository.MenuRepositoryImpl.class)
 class MenuRepositoryImplIntegrationTest {
 
     @Container
@@ -170,7 +170,7 @@ class MenuRepositoryImplIntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> menuRepository.findById(nonExistentId))
-                .isInstanceOf(MenuNotFoundException.class);
+                .isInstanceOf(harry.boilerplate.shop.command.infrastructure.repository.MenuNotFoundException.class);
     }
 
     @Test

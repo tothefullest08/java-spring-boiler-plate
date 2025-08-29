@@ -2,8 +2,8 @@ package harry.boilerplate.shop.presentation.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import harry.boilerplate.common.response.CommandResultResponse;
-import harry.boilerplate.shop.presentation.command.dto.CreateMenuRequest;
-import harry.boilerplate.shop.presentation.command.dto.CreateShopRequest;
+import harry.boilerplate.shop.command.presentation.dto.CreateMenuRequest;
+import harry.boilerplate.shop.command.presentation.dto.CreateShopRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

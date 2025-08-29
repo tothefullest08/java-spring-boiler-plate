@@ -1,14 +1,15 @@
 package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.shop.application.command.dto.CreateMenuCommand;
-import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.aggregate.MenuRepository;
-import harry.boilerplate.shop.domain.aggregate.Shop;
-import harry.boilerplate.shop.domain.aggregate.ShopRepository;
-import harry.boilerplate.shop.domain.exception.ShopDomainException;
-import harry.boilerplate.shop.domain.exception.ShopErrorCode;
-import harry.boilerplate.shop.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.application.dto.CreateMenuCommand;
+import harry.boilerplate.shop.command.domain.aggregate.Menu;
+import harry.boilerplate.shop.command.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.command.domain.aggregate.Shop;
+import harry.boilerplate.shop.command.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.command.domain.exception.ShopDomainException;
+import harry.boilerplate.shop.command.domain.exception.ShopErrorCode;
+import harry.boilerplate.shop.command.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.application.handler.CreateMenuCommandHandler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import harry.boilerplate.shop.domain.valueObject.BusinessHours;
+import harry.boilerplate.shop.command.domain.valueObject.BusinessHours;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Map;

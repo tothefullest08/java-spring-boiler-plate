@@ -1,13 +1,14 @@
 package harry.boilerplate.shop.application.command.handler;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.shop.application.command.dto.OpenMenuCommand;
-import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.aggregate.MenuRepository;
-import harry.boilerplate.shop.domain.exception.MenuDomainException;
-import harry.boilerplate.shop.domain.exception.MenuErrorCode;
-import harry.boilerplate.shop.domain.valueObject.MenuId;
-import harry.boilerplate.shop.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.application.dto.OpenMenuCommand;
+import harry.boilerplate.shop.command.domain.aggregate.Menu;
+import harry.boilerplate.shop.command.domain.aggregate.MenuRepository;
+import harry.boilerplate.shop.command.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.command.domain.exception.MenuErrorCode;
+import harry.boilerplate.shop.command.domain.valueObject.MenuId;
+import harry.boilerplate.shop.command.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.application.handler.OpenMenuCommandHandler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ class OpenMenuCommandHandlerTest {
         // 메뉴 공개 조건을 만족하도록 설정
         menu.addOptionGroup("양 선택", true);
         menu.getOptionGroups().get(0).addOption(
-            new harry.boilerplate.shop.domain.valueObject.Option("곱빼기", Money.of(new BigDecimal("2000")))
+            new harry.boilerplate.shop.command.domain.valueObject.Option("곱빼기", Money.of(new BigDecimal("2000")))
         );
         
         command = new OpenMenuCommand(menu.getId().getValue());

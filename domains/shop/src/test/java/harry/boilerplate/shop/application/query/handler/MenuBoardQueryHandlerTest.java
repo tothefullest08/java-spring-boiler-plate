@@ -1,10 +1,11 @@
 package harry.boilerplate.shop.application.query.handler;
 
-import harry.boilerplate.shop.application.query.dto.MenuBoardQuery;
-import harry.boilerplate.shop.application.query.dto.MenuBoardResult;
-import harry.boilerplate.shop.application.query.readmodel.MenuBoardViewModel;
-import harry.boilerplate.shop.application.query.readmodel.MenuSummaryReadModel;
-import harry.boilerplate.shop.infrastructure.query.dao.MenuQueryDao;
+import harry.boilerplate.shop.query.application.dto.MenuBoardQuery;
+import harry.boilerplate.shop.query.application.dto.MenuBoardResult;
+import harry.boilerplate.shop.query.application.handler.MenuBoardQueryHandler;
+import harry.boilerplate.shop.query.application.readModel.MenuBoardViewModel;
+import harry.boilerplate.shop.query.application.readModel.MenuSummaryReadModel;
+import harry.boilerplate.shop.query.infrastructure.dao.MenuQueryDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

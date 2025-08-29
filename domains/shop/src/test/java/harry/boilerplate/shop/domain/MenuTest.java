@@ -2,14 +2,14 @@ package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.common.domain.event.DomainEvent;
-import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.exception.MenuDomainException;
-import harry.boilerplate.shop.domain.exception.MenuErrorCode;
-import harry.boilerplate.shop.domain.entity.OptionGroup;
-import harry.boilerplate.shop.domain.event.MenuOpenedEvent;
-import harry.boilerplate.shop.domain.valueObject.Option;
-import harry.boilerplate.shop.domain.valueObject.OptionGroupId;
-import harry.boilerplate.shop.domain.valueObject.ShopId;
+import harry.boilerplate.shop.command.domain.aggregate.Menu;
+import harry.boilerplate.shop.command.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.command.domain.exception.MenuErrorCode;
+import harry.boilerplate.shop.command.domain.entity.OptionGroup;
+import harry.boilerplate.shop.command.domain.event.MenuOpenedEvent;
+import harry.boilerplate.shop.command.domain.valueObject.Option;
+import harry.boilerplate.shop.command.domain.valueObject.OptionGroupId;
+import harry.boilerplate.shop.command.domain.valueObject.ShopId;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

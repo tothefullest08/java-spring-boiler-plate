@@ -1,6 +1,6 @@
 package harry.boilerplate.shop.domain;
 
-import harry.boilerplate.shop.domain.valueObject.BusinessHours;
+import harry.boilerplate.shop.command.domain.valueObject.BusinessHours;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

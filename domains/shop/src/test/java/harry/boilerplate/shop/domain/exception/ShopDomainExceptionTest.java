@@ -1,5 +1,8 @@
 package harry.boilerplate.shop.domain.exception;
 
+import harry.boilerplate.shop.command.domain.exception.ShopDomainException;
+import harry.boilerplate.shop.command.domain.exception.ShopErrorCode;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

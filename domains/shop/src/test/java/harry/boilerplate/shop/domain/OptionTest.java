@@ -1,9 +1,9 @@
 package harry.boilerplate.shop.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.shop.domain.exception.MenuDomainException;
-import harry.boilerplate.shop.domain.exception.MenuErrorCode;
-import harry.boilerplate.shop.domain.valueObject.Option;
+import harry.boilerplate.shop.command.domain.exception.MenuDomainException;
+import harry.boilerplate.shop.command.domain.exception.MenuErrorCode;
+import harry.boilerplate.shop.command.domain.valueObject.Option;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
