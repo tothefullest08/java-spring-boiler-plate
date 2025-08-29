@@ -384,7 +384,7 @@ public abstract class DomainEntity<T extends DomainEntity<T, TID>, TID> extends 
     public abstract TID getId();
 }
 
-// ✅ 애그리게이트 루트: AggregateRoot 상속
+// ✅ 애그리게이트 루트: AggregateRoot 상속 (Command Domain에 위치)
 @Entity
 @Table(name = "menu")
 public class Menu extends AggregateRoot<Menu, MenuId> {
@@ -397,7 +397,7 @@ public class Menu extends AggregateRoot<Menu, MenuId> {
     }
 }
 
-// ✅ 도메인 엔티티: DomainEntity 상속
+// ✅ 도메인 엔티티: DomainEntity 상속 (Command Domain에 위치)
 @Entity
 @Table(name = "option_group")
 public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
@@ -414,7 +414,7 @@ public class OptionGroup extends DomainEntity<OptionGroup, OptionGroupId> {
     }
 }
 
-// ✅ 값 객체: ValueObject 상속 (불변)
+// ✅ 값 객체: ValueObject 상속 (불변, Command Domain에 위치)
 @Embeddable
 public class Option extends ValueObject {
     @Column(name = "option_name")
@@ -434,7 +434,7 @@ public class Option extends ValueObject {
 
 #### 바운디드 컨텍스트 격리 원칙
 - **Common 패키지**: 아키텍처 패턴(인터페이스)만 제공
-- **각 Context**: 구체적인 비즈니스 도메인 이벤트 구현
+- **각 Context의 Command Domain**: 구체적인 비즈니스 도메인 이벤트 구현
 
 ```java
 // ✅ Common 패키지: 아키텍처 패턴만
@@ -447,8 +447,8 @@ public interface DomainEvent {
     int getVersion();
 }
 
-// ✅ Order Context: 비즈니스 도메인 이벤트
-// domains/order/src/main/java/harry/boilerplate/order/domain/event/OrderPlacedEvent.java
+// ✅ Order Context Command Domain: 비즈니스 도메인 이벤트
+// domains/order/src/main/java/harry/boilerplate/order/command/domain/event/OrderPlacedEvent.java
 public class OrderPlacedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();
@@ -471,8 +471,8 @@ public class OrderPlacedEvent implements DomainEvent {
     // getters...
 }
 
-// ✅ Shop Context: 비즈니스 도메인 이벤트
-// domains/shop/src/main/java/harry/boilerplate/shop/domain/event/MenuOpenedEvent.java
+// ✅ Shop Context Command Domain: 비즈니스 도메인 이벤트
+// domains/shop/src/main/java/harry/boilerplate/shop/command/domain/event/MenuOpenedEvent.java
 public class MenuOpenedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();

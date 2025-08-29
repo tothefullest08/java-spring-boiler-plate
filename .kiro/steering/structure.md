@@ -84,64 +84,69 @@ java-spring-boiler-plate/
 ### 각 컨텍스트 내부 구조
 ```
 domains/shop/src/main/java/harry/boilerplate/shop/
-├── domain/                          # 도메인 레이어 (DDD 분류)
-│   ├── aggregate/                   # 애그리게이트 루트들
-│   │   ├── Menu.java               # Menu 애그리게이트 루트
-│   │   ├── Shop.java               # Shop 애그리게이트 루트
-│   │   ├── MenuRepository.java     # Menu Repository Interface
-│   │   ├── ShopRepository.java     # Shop Repository Interface
-│   │   ├── MenuDomainException.java
-│   │   ├── ShopDomainException.java
-│   │   ├── MenuErrorCode.java
-│   │   └── ShopErrorCode.java
-│   ├── entity/                      # 도메인 엔티티들 (DomainEntity 상속)
-│   │   └── OptionGroup.java        # Menu 애그리게이트 내부 엔티티
-│   ├── valueobject/                 # 값 객체들 (ValueObject 상속)
-│   │   ├── MenuId.java             # Menu ID
-│   │   ├── ShopId.java             # Shop ID
-│   │   ├── OptionGroupId.java      # OptionGroup ID
-│   │   ├── Option.java             # 옵션 값 객체
-│   │   └── BusinessHours.java      # 영업시간 값 객체
-│   └── event/                       # 도메인 이벤트들
-│       ├── MenuOpenedEvent.java
-│       └── ShopClosedEvent.java
-├── application/
-│   ├── command/                    # 명령 처리 (쓰기 작업)
-│   │   ├── handler/                # Command Handler
+├── command/                         # 쓰기 작업 전용 (CQRS Command Side)
+│   ├── domain/                      # 도메인 레이어 (Command 전용)
+│   │   ├── aggregate/               # 애그리게이트 루트들
+│   │   │   ├── Menu.java           # Menu 애그리게이트 루트
+│   │   │   ├── Shop.java           # Shop 애그리게이트 루트
+│   │   │   ├── MenuRepository.java # Menu Repository Interface
+│   │   │   ├── ShopRepository.java # Shop Repository Interface
+│   │   │   ├── MenuDomainException.java
+│   │   │   ├── ShopDomainException.java
+│   │   │   ├── MenuErrorCode.java
+│   │   │   └── ShopErrorCode.java
+│   │   ├── entity/                  # 도메인 엔티티들 (DomainEntity 상속)
+│   │   │   └── OptionGroup.java    # Menu 애그리게이트 내부 엔티티
+│   │   ├── valueObject/             # 값 객체들 (ValueObject 상속)
+│   │   │   ├── MenuId.java         # Menu ID
+│   │   │   ├── ShopId.java         # Shop ID
+│   │   │   ├── OptionGroupId.java  # OptionGroup ID
+│   │   │   ├── Option.java         # 옵션 값 객체
+│   │   │   └── BusinessHours.java  # 영업시간 값 객체
+│   │   ├── event/                   # 도메인 이벤트들
+│   │   │   ├── MenuOpenedEvent.java
+│   │   │   └── ShopClosedEvent.java
+│   │   └── exception/               # 도메인 예외들
+│   ├── application/                 # Command Application Layer
+│   │   ├── handler/                 # Command Handler
 │   │   │   ├── CreateMenuCommandHandler.java
 │   │   │   └── UpdateMenuCommandHandler.java
-│   │   ├── service/                # Command Service
+│   │   ├── service/                 # Command Service (선택적)
 │   │   │   └── MenuCommandService.java
-│   │   └── dto/                    # Command DTO
+│   │   └── dto/                     # Command DTO
 │   │       ├── CreateMenuCommand.java
 │   │       └── UpdateMenuCommand.java
-│   └── query/                      # 조회 처리 (읽기 작업)
-│       ├── handler/                # Query Handler
-│       │   ├── MenuBoardQueryHandler.java
-│       │   └── MenuDetailQueryHandler.java
-│       ├── readmodel/              # CQRS Journey 스타일 Read Model
-│       │   ├── MenuSummaryReadModel.java
-│       │   ├── MenuDetailReadModel.java
-│       │   └── MenuBoardViewModel.java
-│       └── dto/                    # Query Request/Response DTO
-│           ├── MenuBoardQuery.java
-│           └── MenuBoardResult.java
-├── infrastructure/
-│   ├── command/                    # Command 영속성 (Repository 패턴)
-│   │   ├── MenuRepositoryImpl.java # JPA 기반 Repository 구현체
-│   │   └── ShopRepositoryImpl.java
-│   └── query/                      # Query 영속성 (DAO 패턴)
-│       ├── dao/                    # Table Data Gateway
-│       │   ├── MenuQueryDaoImpl.java    # EntityManager 직접 사용
-│       │   └── ShopQueryDaoImpl.java
-│       └── mapper/                 # Entity → ReadModel 변환
-│           ├── MenuReadModelMapper.java
-│           └── ShopReadModelMapper.java
-├── presentation/
-│   ├── command/                    # 명령 API 컨트롤러
-│   │   └── MenuCommandController.java
-│   └── query/                      # 조회 API 컨트롤러  
-│       └── MenuQueryController.java
+│   ├── infrastructure/              # Command Infrastructure Layer
+│   │   ├── repository/              # Repository 구현체 (JPA 기반)
+│   │   │   ├── MenuRepositoryImpl.java
+│   │   │   └── ShopRepositoryImpl.java
+│   │   └── external/                # 외부 API 클라이언트
+│   └── presentation/                # Command Presentation Layer
+│       ├── controller/              # Command Controller
+│       │   └── MenuCommandController.java
+│       └── dto/                     # Request/Response DTO
+└── query/                           # 읽기 작업 전용 (CQRS Query Side) - 도메인 로직 없음
+    ├── application/                 # Query Application Layer
+    │   ├── handler/                 # Query Handler
+    │   │   ├── MenuBoardQueryHandler.java
+    │   │   └── MenuDetailQueryHandler.java
+    │   ├── readModel/               # CQRS Journey 스타일 Read Model
+    │   │   ├── MenuSummaryReadModel.java
+    │   │   ├── MenuDetailReadModel.java
+    │   │   └── MenuBoardViewModel.java
+    │   └── dto/                     # Query Request/Response DTO
+    │       ├── MenuBoardQuery.java
+    │       └── MenuBoardResult.java
+    ├── infrastructure/              # Query Infrastructure Layer
+    │   ├── dao/                     # DAO 구현체 (Table Data Gateway)
+    │   │   ├── MenuQueryDaoImpl.java    # EntityManager 직접 사용
+    │   │   └── ShopQueryDaoImpl.java
+    │   └── mapper/                  # Entity → ReadModel 변환
+    │       ├── MenuReadModelMapper.java
+    │       └── ShopReadModelMapper.java
+    └── presentation/                # Query Presentation Layer
+        └── controller/              # Query Controller
+            └── MenuQueryController.java
 └── ShopApplication.java            # Spring Boot 메인 클래스
 ```
 
@@ -235,11 +240,12 @@ public abstract class ValueObject {
 }
 
 // ✅ 디렉토리 분류 규칙
-domains/shop/src/main/java/harry/boilerplate/shop/domain/
+domains/shop/src/main/java/harry/boilerplate/shop/command/domain/
 ├── aggregate/     # 애그리게이트 루트 + Repository + Exception + ErrorCode
 ├── entity/        # 도메인 엔티티 (DomainEntity 상속) - OptionGroup, CartLineItem, OrderLineItem
-├── valueobject/   # 값 객체 (ValueObject 상속, ID 클래스 포함) - Option, 모든 ID 클래스
-└── event/         # 도메인 이벤트
+├── valueObject/   # 값 객체 (ValueObject 상속, ID 클래스 포함) - Option, 모든 ID 클래스
+├── event/         # 도메인 이벤트
+└── exception/     # 도메인 예외
 
 // ❌ 금지: JPA 엔티티와 도메인 엔티티 분리
 // - 변환 로직 불필요
@@ -441,19 +447,22 @@ domains/
 │       └── event/                    # 도메인 이벤트 패턴
 │           └── DomainEvent.java     # 인터페이스만
 ├── shop/                            # Shop Context 비즈니스 이벤트
-│   └── domain/
-│       └── event/
-│           ├── MenuOpenedEvent.java
-│           └── ShopClosedEvent.java
+│   └── command/
+│       └── domain/
+│           └── event/
+│               ├── MenuOpenedEvent.java
+│               └── ShopClosedEvent.java
 ├── order/                           # Order Context 비즈니스 이벤트
-│   └── domain/
-│       └── event/
-│           ├── OrderPlacedEvent.java
-│           └── CartItemAddedEvent.java
+│   └── command/
+│       └── domain/
+│           └── event/
+│               ├── OrderPlacedEvent.java
+│               └── CartItemAddedEvent.java
 └── user/                            # User Context 비즈니스 이벤트
-    └── domain/
-        └── event/
-            └── UserRegisteredEvent.java
+    └── command/
+        └── domain/
+            └── event/
+                └── UserRegisteredEvent.java
 
 ❌ 금지된 구조:
 domains/
@@ -591,20 +600,24 @@ grep -r "import.*CartLineItem" domains/
 ### 🔍 Import 문 수정 대상 파일 유형
 
 #### 반드시 확인해야 할 파일들
-1. **도메인 레이어**
-   - `domains/*/domain/aggregate/*.java`
-   - `domains/*/domain/entity/*.java`
-   - `domains/*/domain/valueobject/*.java`
+1. **Command 도메인 레이어**
+   - `domains/*/command/domain/aggregate/*.java`
+   - `domains/*/command/domain/entity/*.java`
+   - `domains/*/command/domain/valueObject/*.java`
 
-2. **애플리케이션 레이어**
-   - `domains/*/application/command/handler/*.java`
-   - `domains/*/application/query/handler/*.java`
+2. **Command 애플리케이션 레이어**
+   - `domains/*/command/application/handler/*.java`
+   - `domains/*/command/application/service/*.java`
 
-3. **인프라스트럭처 레이어**
-   - `domains/*/infrastructure/command/*.java`
-   - `domains/*/infrastructure/query/*.java`
+3. **Query 애플리케이션 레이어**
+   - `domains/*/query/application/handler/*.java`
+   - `domains/*/query/application/readModel/*.java`
 
-4. **테스트 파일**
+4. **인프라스트럭처 레이어**
+   - `domains/*/command/infrastructure/repository/*.java`
+   - `domains/*/query/infrastructure/dao/*.java`
+
+5. **테스트 파일**
    - `domains/*/test/java/**/*Test.java`
 
 ### ⚠️ 자주 놓치는 Import 문 위치

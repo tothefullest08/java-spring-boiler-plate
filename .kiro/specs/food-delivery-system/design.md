@@ -165,7 +165,7 @@ public class OptionGroup extends ValueObject {
 }
 ```
 
-#### Application Layer
+#### Command Application Layer
 ```java
 // Command Handlers
 @Component
@@ -180,19 +180,22 @@ public class OpenMenuCommandHandler {
     public void handle(OpenMenuCommand command);
 }
 
-// Query Handlers
-@Component
-@Transactional(readOnly = true)
-public class MenuBoardQueryHandler {
-    public MenuBoardResult handle(MenuBoardQuery query);
-}
-
 // Command DTOs
 public class CreateMenuCommand {
     private final String shopId;
     private final String name;
     private final String description;
     private final BigDecimal basePrice;
+}
+```
+
+#### Query Application Layer
+```java
+// Query Handlers
+@Component
+@Transactional(readOnly = true)
+public class MenuBoardQueryHandler {
+    public MenuBoardResult handle(MenuBoardQuery query);
 }
 
 // Query DTOs
@@ -209,7 +212,7 @@ public class MenuBoardResult {
 }
 ```
 
-#### Infrastructure Layer
+#### Command Infrastructure Layer
 ```java
 // Command Repository
 @Repository
@@ -221,7 +224,10 @@ public class MenuRepositoryImpl implements MenuRepository {
     public Menu find(MenuId menuId);
     public void save(Menu menu);
 }
+```
 
+#### Query Infrastructure Layer
+```java
 // Query DAO
 @Repository
 @Transactional(readOnly = true)

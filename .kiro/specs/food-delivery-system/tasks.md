@@ -245,13 +245,41 @@
     - 멀티 컨텍스트 상호작용 시나리오 테스트 작성
     - _Requirements: 8.5, 8.6_
 
-- [ ] 19. 애플리케이션 설정 및 배포 준비
-  - [ ] 19.1 각 컨텍스트별 Spring Boot 설정 완성
+- [ ] 19. CQRS 중심 디렉토리 구조 리팩토링
+  - [ ] 19.1 Shop Context 디렉토리 구조 변경
+    - 기존 domain/ 디렉토리를 command/domain/으로 이동
+    - application/command/를 command/application/으로 이동
+    - application/query/를 query/application/으로 이동
+    - infrastructure/command/를 command/infrastructure/repository/로 이동
+    - infrastructure/query/를 query/infrastructure/로 이동
+    - presentation/command/를 command/presentation/controller/로 이동
+    - presentation/query/를 query/presentation/controller/로 이동
+    - valueobject 디렉토리명을 valueObject로 변경 (카멜케이스)
+    - readmodel 디렉토리명을 readModel로 변경 (카멜케이스)
+    - _Requirements: 9.1, 9.2_
+  
+  - [ ] 19.2 Order Context 디렉토리 구조 변경
+    - Shop Context와 동일한 패턴으로 디렉토리 구조 변경
+    - 모든 import 문을 새로운 패키지 경로로 수정
+    - _Requirements: 9.1, 9.2_
+  
+  - [ ] 19.3 User Context 디렉토리 구조 변경
+    - Shop Context와 동일한 패턴으로 디렉토리 구조 변경
+    - 모든 import 문을 새로운 패키지 경로로 수정
+    - _Requirements: 9.1, 9.2_
+  
+  - [ ] 19.4 테스트 파일 구조 변경 및 검증
+    - 모든 테스트 파일의 import 문을 새로운 패키지 경로로 수정
+    - 각 컨텍스트별 컴파일 및 테스트 실행으로 검증
+    - _Requirements: 9.1, 9.2_
+
+- [ ] 20. 애플리케이션 설정 및 배포 준비
+  - [ ] 20.1 각 컨텍스트별 Spring Boot 설정 완성
     - application.yml 파일 설정 (포트, 데이터베이스 연결)
     - 각 컨텍스트별 메인 애플리케이션 클래스 작성
     - _Requirements: 10.2, 10.3, 10.4_
   
-  - [ ] 19.2 빌드 및 실행 스크립트 작성
+  - [ ] 20.2 빌드 및 실행 스크립트 작성
     - Gradle 빌드 태스크 최적화
     - Docker Compose 환경에서 전체 시스템 실행 검증
     - _Requirements: 10.1, 10.5_
