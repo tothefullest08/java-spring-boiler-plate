@@ -1,13 +1,13 @@
 # Implementation Plan
 
-- [ ] 1. 마이그레이션 준비 및 백업
+- [x] 1. 마이그레이션 준비 및 백업
   - 현재 상태 백업 생성 및 Git 체크포인트 설정
   - 마이그레이션 전 컴파일 및 테스트 상태 확인
   - 모든 import 문 분석 및 매핑 테이블 생성
   - _Requirements: 5.1, 5.2, 6.3_
 
-- [ ] 2. Shop Context 디렉토리 구조 변경
-  - [ ] 2.1 Command 영역 디렉토리 구조 생성
+- [x] 2. Shop Context 디렉토리 구조 변경
+  - [x] 2.1 Command 영역 디렉토리 구조 생성
     - command/domain/aggregate/ 디렉토리 생성 및 애그리게이트 루트 이동
     - command/domain/entity/ 디렉토리 생성 및 도메인 엔티티 이동
     - command/domain/valueObject/ 디렉토리 생성 및 값 객체 이동 (카멜케이스)
@@ -15,67 +15,67 @@
     - command/domain/exception/ 디렉토리 생성 및 도메인 예외 이동
     - _Requirements: 1.2, 2.1, 2.2, 2.3, 2.4, 2.5_
   
-  - [ ] 2.2 Command Application Layer 구조 변경
+  - [x] 2.2 Command Application Layer 구조 변경
     - command/application/handler/ 디렉토리로 Command Handler 이동
     - command/application/service/ 디렉토리로 Command Service 이동
     - command/application/dto/ 디렉토리로 Command DTO 이동
     - _Requirements: 1.2, 4.3_
   
-  - [ ] 2.3 Command Infrastructure Layer 구조 변경
+  - [x] 2.3 Command Infrastructure Layer 구조 변경
     - command/infrastructure/repository/ 디렉토리로 Repository 구현체 이동
     - command/infrastructure/external/ 디렉토리로 외부 API 클라이언트 이동
     - _Requirements: 1.2_
   
-  - [ ] 2.4 Command Presentation Layer 구조 변경
+  - [x] 2.4 Command Presentation Layer 구조 변경
     - command/presentation/controller/ 디렉토리로 Command Controller 이동
     - command/presentation/dto/ 디렉토리로 Request/Response DTO 이동
     - _Requirements: 1.2_
   
-  - [ ] 2.5 Query 영역 디렉토리 구조 생성
+  - [x] 2.5 Query 영역 디렉토리 구조 생성
     - query/application/handler/ 디렉토리로 Query Handler 이동
     - query/application/readModel/ 디렉토리로 Read Model 이동 (카멜케이스)
     - query/application/dto/ 디렉토리로 Query DTO 이동
     - _Requirements: 1.3, 3.1, 3.2, 4.2_
   
-  - [ ] 2.6 Query Infrastructure Layer 구조 변경
+  - [x] 2.6 Query Infrastructure Layer 구조 변경
     - query/infrastructure/dao/ 디렉토리로 Query DAO 이동
     - query/infrastructure/mapper/ 디렉토리로 Mapper 이동
     - _Requirements: 1.3, 3.3_
   
-  - [ ] 2.7 Query Presentation Layer 구조 변경
+  - [x] 2.7 Query Presentation Layer 구조 변경
     - query/presentation/controller/ 디렉토리로 Query Controller 이동
     - _Requirements: 1.3, 3.4_
 
-- [ ] 3. Shop Context Import 문 업데이트
-  - [ ] 3.1 Command 영역 Import 문 수정
+- [x] 3. Shop Context Import 문 업데이트
+  - [x] 3.1 Command 영역 Import 문 수정
     - 모든 Command Handler에서 domain 패키지 import 경로 수정
     - Command Service에서 애그리게이트 및 Repository import 경로 수정
     - Command Controller에서 Handler 및 DTO import 경로 수정
     - _Requirements: 4.3, 5.1_
   
-  - [ ] 3.2 Query 영역 Import 문 수정
+  - [x] 3.2 Query 영역 Import 문 수정
     - Query Handler에서 DAO 및 ReadModel import 경로 수정
     - Query Controller에서 Handler 및 DTO import 경로 수정
     - Mapper에서 Entity 및 ReadModel import 경로 수정
     - _Requirements: 4.3, 5.1_
   
-  - [ ] 3.3 테스트 파일 Import 문 수정
+  - [x] 3.3 테스트 파일 Import 문 수정
     - 모든 테스트 클래스의 import 문을 새로운 패키지 경로로 수정
     - Mock 객체 생성 시 사용되는 클래스 경로 수정
     - _Requirements: 5.1, 5.2_
 
-- [ ] 4. Shop Context 검증 및 테스트
-  - [ ] 4.1 컴파일 검증
+- [x] 4. Shop Context 검증 및 테스트
+  - [x] 4.1 컴파일 검증
     - Shop Context 컴파일 성공 확인
     - Import 문 누락 및 오류 검사
     - _Requirements: 5.4, 6.2_
   
-  - [ ] 4.2 단위 테스트 실행
+  - [x] 4.2 단위 테스트 실행
     - 모든 도메인 모델 단위 테스트 통과 확인
     - Command Handler 및 Query Handler 테스트 통과 확인
     - _Requirements: 5.2, 5.3_
   
-  - [ ] 4.3 통합 테스트 실행
+  - [x] 4.3 통합 테스트 실행
     - Repository 및 DAO 통합 테스트 통과 확인
     - Controller API 테스트 통과 확인
     - _Requirements: 5.2, 5.3_
@@ -184,14 +184,14 @@
 ### 각 컨텍스트별 필수 확인 사항
 
 #### ✅ Shop Context
-- [ ] Menu, Shop 애그리게이트가 `command/domain/aggregate/`에 위치
-- [ ] OptionGroup 엔티티가 `command/domain/entity/`에 위치  
-- [ ] MenuId, ShopId 등이 `command/domain/valueObject/`에 위치
-- [ ] MenuOpenedEvent 등이 `command/domain/event/`에 위치
-- [ ] MenuSummaryReadModel 등이 `query/application/readModel/`에 위치
-- [ ] 모든 import 문이 새로운 패키지 경로 사용
-- [ ] 컴파일 성공: `./gradlew :domains:shop:compileJava`
-- [ ] 테스트 통과: `./gradlew :domains:shop:test --info`
+- [x] Menu, Shop 애그리게이트가 `command/domain/aggregate/`에 위치
+- [x] OptionGroup 엔티티가 `command/domain/entity/`에 위치  
+- [x] MenuId, ShopId 등이 `command/domain/valueObject/`에 위치
+- [x] MenuOpenedEvent 등이 `command/domain/event/`에 위치
+- [x] MenuSummaryReadModel 등이 `query/application/readModel/`에 위치
+- [x] 모든 import 문이 새로운 패키지 경로 사용
+- [x] 컴파일 성공: `./gradlew :domains:shop:compileJava`
+- [x] 테스트 통과: `./gradlew :domains:shop:test --info`
 
 #### ✅ Order Context  
 - [ ] Cart, Order 애그리게이트가 `command/domain/aggregate/`에 위치
