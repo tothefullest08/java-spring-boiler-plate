@@ -30,7 +30,10 @@ public enum CartErrorCode implements ErrorCode {
     SHOP_NOT_OPEN("CART-DOMAIN-011", "가게가 영업 중이 아닙니다"),
     MENU_NOT_AVAILABLE("CART-DOMAIN-012", "메뉴를 사용할 수 없습니다"),
     INVALID_OPTION_SELECTION("CART-DOMAIN-013", "올바르지 않은 옵션 선택입니다"),
-    INVALID_SHOP_ID("CART-DOMAIN-014", "올바르지 않은 가게 ID입니다");
+    INVALID_SHOP_ID("CART-DOMAIN-014", "올바르지 않은 가게 ID입니다"),
+    
+    // 주문 관련 에러
+    MINIMUM_ORDER_AMOUNT_NOT_MET("CART-DOMAIN-015", "최소 주문금액을 충족하지 않습니다");
     
     private final String code;
     private final String message;

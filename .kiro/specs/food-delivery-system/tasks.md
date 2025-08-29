@@ -217,7 +217,7 @@
     - User Command/Query Controller 구현
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-- [ ] 17. 통합 테스트 구현
+- [x] 17. 통합 테스트 구현
   - [x] 17.1 단위 테스트 작성
     - 각 도메인 모델의 비즈니스 로직 단위 테스트 작성
     - Command/Query Handler 단위 테스트 작성
@@ -229,18 +229,18 @@
     - Repository 구현체 CRUD 작업 테스트 작성
     - _Requirements: 9.1, 9.2_
   
-  - [ ] 17.3 API 통합 테스트 작성
+  - [x] 17.3 API 통합 테스트 작성
     - Controller 레이어 통합 테스트 작성
     - 각 엔드포인트별 성공/실패 시나리오 테스트 작성
     - _Requirements: 10.5_
 
-- [ ] 18. 컨텍스트 간 통신 테스트 구현
-  - [ ] 18.1 API Client 테스트 작성
+- [x] 18. 컨텍스트 간 통신 테스트 구현
+  - [x] 18.1 API Client 테스트 작성
     - ShopApiClient, UserApiClient 단위 테스트 작성
     - WireMock을 사용한 외부 API 호출 테스트 작성
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
   
-  - [ ] 18.2 End-to-End 테스트 작성
+  - [x] 18.2 End-to-End 테스트 작성
     - 전체 주문 플로우 E2E 테스트 작성
     - 멀티 컨텍스트 상호작용 시나리오 테스트 작성
     - _Requirements: 8.5, 8.6_
