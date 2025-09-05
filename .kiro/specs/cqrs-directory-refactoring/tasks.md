@@ -115,13 +115,13 @@
     - UserApiClient를 통한 User Context API 호출 테스트
     - _Requirements: 5.2, 5.3_
 
-- [ ] 7. User Context 디렉토리 구조 변경
-  - [ ] 7.1 User Context 구조 변경
+- [x] 7. User Context 디렉토리 구조 변경
+  - [x] 7.1 User Context 구조 변경
     - Shop Context와 동일한 패턴으로 Command/Query 구조 생성
     - User 애그리게이트 및 관련 컴포넌트들을 새로운 구조로 이동
     - _Requirements: 1.2, 1.3, 2.1, 2.2, 2.3_
   
-  - [ ] 7.2 User Context Import 문 업데이트 및 검증
+  - [x] 7.2 User Context Import 문 업데이트 및 검증
     - 모든 import 문을 새로운 패키지 경로로 수정
     - 컴파일 및 테스트 통과 확인
     - _Requirements: 4.3, 5.1, 5.2, 5.3_

@@ -1,11 +1,11 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.order.domain.aggregate.Order;
-import harry.boilerplate.order.domain.entity.OrderLineItem;
-import harry.boilerplate.order.domain.exception.OrderDomainException;
-import harry.boilerplate.order.domain.exception.OrderErrorCode;
-import harry.boilerplate.order.domain.valueObject.*;
+import harry.boilerplate.order.command.domain.aggregate.Order;
+import harry.boilerplate.order.command.domain.entity.OrderLineItem;
+import harry.boilerplate.order.command.domain.exception.OrderDomainException;
+import harry.boilerplate.order.command.domain.exception.OrderErrorCode;
+import harry.boilerplate.order.command.domain.valueObject.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

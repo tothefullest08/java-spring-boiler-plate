@@ -1,4 +1,4 @@
-package harry.boilerplate.order.infrastructure.external.shop;
+package harry.boilerplate.order.command.infrastructure.external.shop;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -197,22 +197,30 @@ class ShopApiClientImplTest {
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .withBody("""
                     {
-                        "options": [
-                            {
-                                "name": "매운맛",
-                                "price": 0
-                            },
-                            {
-                                "name": "치즈 추가",
-                                "price": 2000
-                            },
-                            {
-                                "name": "곱빼기",
-                                "price": 1000
-                            }
-                        ]
+                        "menu": {
+                            "id": "%s",
+                            "name": "테스트 메뉴",
+                            "optionGroups": [
+                                {
+                                    "options": [
+                                        {
+                                            "name": "매운맛",
+                                            "price": 0
+                                        },
+                                        {
+                                            "name": "치즈 추가",
+                                            "price": 2000
+                                        },
+                                        {
+                                            "name": "곱빼기",
+                                            "price": 1000
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
                     }
-                    """)));
+                    """.formatted(menuId))));
 
         // When
         List<ShopApiClient.OptionInfoResponse> result = shopApiClient.getMenuOptions(shopId, menuId);
@@ -243,9 +251,13 @@ class ShopApiClientImplTest {
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .withBody("""
                     {
-                        "options": []
+                        "menu": {
+                            "id": "%s",
+                            "name": "테스트 메뉴",
+                            "optionGroups": []
+                        }
                     }
-                    """)));
+                    """.formatted(menuId))));
 
         // When
         List<ShopApiClient.OptionInfoResponse> result = shopApiClient.getMenuOptions(shopId, menuId);

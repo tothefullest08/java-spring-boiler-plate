@@ -1,16 +1,16 @@
-package harry.boilerplate.order.application.command.handler;
+package harry.boilerplate.order.command.application.handler;
 
-import harry.boilerplate.order.application.command.dto.AddCartItemCommand;
-import harry.boilerplate.order.domain.aggregate.Cart;
-import harry.boilerplate.order.domain.aggregate.CartRepository;
-import harry.boilerplate.order.domain.exception.CartDomainException;
-import harry.boilerplate.order.domain.exception.CartErrorCode;
-import harry.boilerplate.order.domain.valueObject.MenuId;
-import harry.boilerplate.order.domain.valueObject.OptionId;
-import harry.boilerplate.order.domain.valueObject.ShopId;
-import harry.boilerplate.order.domain.valueObject.UserId;
-import harry.boilerplate.order.infrastructure.external.shop.ShopApiClient;
-import harry.boilerplate.order.infrastructure.external.user.UserApiClient;
+import harry.boilerplate.order.command.application.dto.AddCartItemCommand;
+import harry.boilerplate.order.command.domain.aggregate.Cart;
+import harry.boilerplate.order.command.domain.aggregate.CartRepository;
+import harry.boilerplate.order.command.domain.exception.CartDomainException;
+import harry.boilerplate.order.command.domain.exception.CartErrorCode;
+import harry.boilerplate.order.command.domain.valueObject.MenuId;
+import harry.boilerplate.order.command.domain.valueObject.OptionId;
+import harry.boilerplate.order.command.domain.valueObject.ShopId;
+import harry.boilerplate.order.command.domain.valueObject.UserId;
+import harry.boilerplate.order.command.infrastructure.external.shop.ShopApiClient;
+import harry.boilerplate.order.command.infrastructure.external.user.UserApiClient;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,7 +89,7 @@ class AddCartItemCommandHandlerTest {
         verify(shopApiClient).isShopOpen("shop-1");
         verify(shopApiClient).getMenu("shop-1", "menu-1");
         verify(cartRepository).findByUserIdOptional(any(UserId.class));
-        verify(cartRepository).save(any(Cart.class));
+        verify(cartRepository).save(argThat(savedCart -> savedCart != null));
     }
 
     @Test
@@ -121,7 +121,7 @@ class AddCartItemCommandHandlerTest {
         verify(shopApiClient).isShopOpen("shop-1");
         verify(shopApiClient).getMenu("shop-1", "menu-1");
         verify(cartRepository).findByUserIdOptional(any(UserId.class));
-        verify(cartRepository).save(any(Cart.class));
+        verify(cartRepository).save(argThat(savedCart -> savedCart != null));
         
         assertThat(cart.getItems()).hasSize(1);
         assertThat(cart.getTotalQuantity()).isEqualTo(2);
@@ -141,7 +141,7 @@ class AddCartItemCommandHandlerTest {
 
         verify(userApiClient).isValidUser("user-1");
         verify(shopApiClient, never()).isShopOpen(anyString());
-        verify(cartRepository, never()).findByUserId(any(UserId.class));
+        verify(cartRepository, never()).findByUserIdOptional(any(UserId.class));
         verify(cartRepository, never()).save(any(Cart.class));
     }
 
@@ -160,7 +160,7 @@ class AddCartItemCommandHandlerTest {
 
         verify(userApiClient).isValidUser("user-1");
         verify(shopApiClient).isShopOpen("shop-1");
-        verify(cartRepository, never()).findByUserId(any(UserId.class));
+        verify(cartRepository, never()).findByUserIdOptional(any(UserId.class));
         verify(cartRepository, never()).save(any(Cart.class));
     }
 
@@ -173,13 +173,24 @@ class AddCartItemCommandHandlerTest {
         
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
         when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+
+        // 메뉴/옵션 정보 모킹
+        ShopApiClient.MenuInfoResponse menuInfo = mock(ShopApiClient.MenuInfoResponse.class);
+        when(menuInfo.isOpen()).thenReturn(true);
+        when(shopApiClient.getMenu(anyString(), anyString())).thenReturn(menuInfo);
+
+        ShopApiClient.OptionInfoResponse option1 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option1.getName()).thenReturn("option-1");
+        ShopApiClient.OptionInfoResponse option2 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option2.getName()).thenReturn("option-2");
+        when(shopApiClient.getMenuOptions(anyString(), anyString())).thenReturn(List.of(option1, option2));
 
         // When
         addCartItemCommandHandler.handle(command);
 
         // Then
-        verify(cartRepository).save(cart);
+        verify(cartRepository).save(argThat(savedCart -> savedCart != null));
         
         // 다른 가게의 메뉴이므로 장바구니가 초기화되고 새 아이템만 있어야 함
         assertThat(cart.getShopId()).isEqualTo(ShopId.of("shop-1"));
@@ -199,13 +210,24 @@ class AddCartItemCommandHandlerTest {
         
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
         when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+
+        // 메뉴/옵션 정보 모킹
+        ShopApiClient.MenuInfoResponse menuInfo = mock(ShopApiClient.MenuInfoResponse.class);
+        when(menuInfo.isOpen()).thenReturn(true);
+        when(shopApiClient.getMenu(anyString(), anyString())).thenReturn(menuInfo);
+
+        ShopApiClient.OptionInfoResponse option1 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option1.getName()).thenReturn("option-1");
+        ShopApiClient.OptionInfoResponse option2 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option2.getName()).thenReturn("option-2");
+        when(shopApiClient.getMenuOptions(anyString(), anyString())).thenReturn(List.of(option1, option2));
 
         // When
         addCartItemCommandHandler.handle(command); // 2개 추가
 
         // Then
-        verify(cartRepository).save(cart);
+        verify(cartRepository).save(argThat(savedCart -> savedCart != null));
         
         assertThat(cart.getItems()).hasSize(1); // 아이템은 1개지만
         assertThat(cart.getTotalQuantity()).isEqualTo(3); // 수량은 3개 (1 + 2)
@@ -221,7 +243,7 @@ class AddCartItemCommandHandlerTest {
 
         verify(userApiClient, never()).isValidUser(anyString());
         verify(shopApiClient, never()).isShopOpen(anyString());
-        verify(cartRepository, never()).findByUserId(any(UserId.class));
+        verify(cartRepository, never()).findByUserIdOptional(any(UserId.class));
         verify(cartRepository, never()).save(any(Cart.class));
     }
 
@@ -238,7 +260,7 @@ class AddCartItemCommandHandlerTest {
 
         verify(userApiClient).isValidUser("user-1");
         verify(shopApiClient, never()).isShopOpen(anyString());
-        verify(cartRepository, never()).findByUserId(any(UserId.class));
+        verify(cartRepository, never()).findByUserIdOptional(any(UserId.class));
         verify(cartRepository, never()).save(any(Cart.class));
     }
 
@@ -248,7 +270,16 @@ class AddCartItemCommandHandlerTest {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
         when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+        // 메뉴/옵션 정보 모킹
+        ShopApiClient.MenuInfoResponse menuInfo = mock(ShopApiClient.MenuInfoResponse.class);
+        when(menuInfo.isOpen()).thenReturn(true);
+        when(shopApiClient.getMenu(anyString(), anyString())).thenReturn(menuInfo);
+        ShopApiClient.OptionInfoResponse option1 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option1.getName()).thenReturn("option-1");
+        ShopApiClient.OptionInfoResponse option2 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option2.getName()).thenReturn("option-2");
+        when(shopApiClient.getMenuOptions(anyString(), anyString())).thenReturn(List.of(option1, option2));
         doThrow(new RuntimeException("데이터베이스 오류")).when(cartRepository).save(any(Cart.class));
 
         // When & Then
@@ -258,8 +289,8 @@ class AddCartItemCommandHandlerTest {
 
         verify(userApiClient).isValidUser("user-1");
         verify(shopApiClient).isShopOpen("shop-1");
-        verify(cartRepository).findByUserId(any(UserId.class));
-        verify(cartRepository).save(any(Cart.class));
+        verify(cartRepository).findByUserIdOptional(any(UserId.class));
+        verify(cartRepository).save(argThat(cart -> cart != null));
     }
 
     @Test
@@ -268,13 +299,23 @@ class AddCartItemCommandHandlerTest {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
         when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+
+        // 메뉴/옵션 정보 모킹
+        ShopApiClient.MenuInfoResponse menuInfo = mock(ShopApiClient.MenuInfoResponse.class);
+        when(menuInfo.isOpen()).thenReturn(true);
+        when(shopApiClient.getMenu(anyString(), anyString())).thenReturn(menuInfo);
+        ShopApiClient.OptionInfoResponse option1 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option1.getName()).thenReturn("option-1");
+        ShopApiClient.OptionInfoResponse option2 = mock(ShopApiClient.OptionInfoResponse.class);
+        when(option2.getName()).thenReturn("option-2");
+        when(shopApiClient.getMenuOptions(anyString(), anyString())).thenReturn(List.of(option1, option2));
 
         // When
         addCartItemCommandHandler.handle(command);
 
         // Then
-        verify(cartRepository).save(cart);
+        verify(cartRepository).save(argThat(savedCart -> savedCart != null));
         
         assertThat(cart.hasDomainEvents()).isTrue();
         assertThat(cart.getDomainEvents()).hasSize(1);

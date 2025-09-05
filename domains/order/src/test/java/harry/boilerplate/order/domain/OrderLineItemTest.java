@@ -1,10 +1,10 @@
 package harry.boilerplate.order.domain;
 
 import harry.boilerplate.common.domain.entity.Money;
-import harry.boilerplate.order.domain.entity.OrderLineItem;
-import harry.boilerplate.order.domain.valueObject.MenuId;
-import harry.boilerplate.order.domain.valueObject.OptionId;
-import harry.boilerplate.order.domain.valueObject.SelectedOption;
+import harry.boilerplate.order.command.domain.entity.OrderLineItem;
+import harry.boilerplate.order.command.domain.valueObject.MenuId;
+import harry.boilerplate.order.command.domain.valueObject.OptionId;
+import harry.boilerplate.order.command.domain.valueObject.SelectedOption;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

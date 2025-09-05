@@ -1,4 +1,4 @@
-package harry.boilerplate.order.domain.exception;
+package harry.boilerplate.order.command.domain.exception;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

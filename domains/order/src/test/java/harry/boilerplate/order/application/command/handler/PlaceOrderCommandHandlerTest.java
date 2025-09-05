@@ -1,20 +1,20 @@
-package harry.boilerplate.order.application.command.handler;
+package harry.boilerplate.order.command.application.handler;
 
-import harry.boilerplate.order.application.command.dto.PlaceOrderCommand;
-import harry.boilerplate.order.domain.aggregate.Cart;
-import harry.boilerplate.order.domain.aggregate.CartRepository;
-import harry.boilerplate.order.domain.aggregate.Order;
-import harry.boilerplate.order.domain.aggregate.OrderRepository;
-import harry.boilerplate.order.domain.exception.CartDomainException;
-import harry.boilerplate.order.domain.exception.CartErrorCode;
-import harry.boilerplate.order.domain.exception.OrderDomainException;
-import harry.boilerplate.order.domain.exception.OrderErrorCode;
-import harry.boilerplate.order.domain.valueObject.MenuId;
-import harry.boilerplate.order.domain.valueObject.OptionId;
-import harry.boilerplate.order.domain.valueObject.ShopId;
-import harry.boilerplate.order.domain.valueObject.UserId;
-import harry.boilerplate.order.infrastructure.external.shop.ShopApiClient;
-import harry.boilerplate.order.infrastructure.external.user.UserApiClient;
+import harry.boilerplate.order.command.application.dto.PlaceOrderCommand;
+import harry.boilerplate.order.command.domain.aggregate.Cart;
+import harry.boilerplate.order.command.domain.aggregate.CartRepository;
+import harry.boilerplate.order.command.domain.aggregate.Order;
+import harry.boilerplate.order.command.domain.aggregate.OrderRepository;
+import harry.boilerplate.order.command.domain.exception.CartDomainException;
+import harry.boilerplate.order.command.domain.exception.CartErrorCode;
+import harry.boilerplate.order.command.domain.exception.OrderDomainException;
+import harry.boilerplate.order.command.domain.exception.OrderErrorCode;
+import harry.boilerplate.order.command.domain.valueObject.MenuId;
+import harry.boilerplate.order.command.domain.valueObject.OptionId;
+import harry.boilerplate.order.command.domain.valueObject.ShopId;
+import harry.boilerplate.order.command.domain.valueObject.UserId;
+import harry.boilerplate.order.command.infrastructure.external.shop.ShopApiClient;
+import harry.boilerplate.order.command.infrastructure.external.user.UserApiClient;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -181,7 +181,8 @@ class PlaceOrderCommandHandlerTest {
     void 주문_저장_실패_시_예외_전파() {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+        when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
         doThrow(new RuntimeException("데이터베이스 오류")).when(orderRepository).save(any(Order.class));
 
         // When & Then
@@ -200,7 +201,8 @@ class PlaceOrderCommandHandlerTest {
     void 장바구니_저장_실패_시_예외_전파() {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+        when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
         doThrow(new RuntimeException("장바구니 저장 오류")).when(cartRepository).save(any(Cart.class));
 
         // When & Then
@@ -219,7 +221,8 @@ class PlaceOrderCommandHandlerTest {
     void 주문_생성_후_도메인_이벤트_발행_확인() {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+        when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
 
         // When
         String orderId = placeOrderCommandHandler.handle(command);
@@ -239,7 +242,8 @@ class PlaceOrderCommandHandlerTest {
     void 주문_생성_시_장바구니_정보가_주문으로_정확히_복사됨() {
         // Given
         when(userApiClient.isValidUser(anyString())).thenReturn(true);
-        when(cartRepository.findByUserId(any(UserId.class))).thenReturn(cart);
+        when(cartRepository.findByUserIdOptional(any(UserId.class))).thenReturn(Optional.of(cart));
+        when(shopApiClient.isShopOpen(anyString())).thenReturn(true);
 
         // When
         placeOrderCommandHandler.handle(command);
@@ -247,9 +251,9 @@ class PlaceOrderCommandHandlerTest {
         // Then
         verify(orderRepository).save(argThat(order -> {
             assertThat(order.getUserId()).isEqualTo(cart.getUserId());
-            assertThat(order.getShopId()).isEqualTo(cart.getShopId());
-            assertThat(order.getOrderItems()).hasSize(cart.getItems().size());
-            assertThat(order.getTotalQuantity()).isEqualTo(cart.getTotalQuantity());
+            assertThat(order.getShopId()).isEqualTo(ShopId.of("shop-1")); // cart.getShopId() 대신 직접 값 사용
+            assertThat(order.getOrderItems()).hasSize(1); // cart에서 생성된 OrderLineItem 1개
+            assertThat(order.getTotalQuantity()).isEqualTo(2); // setUp에서 설정한 quantity
             return true;
         }));
     }

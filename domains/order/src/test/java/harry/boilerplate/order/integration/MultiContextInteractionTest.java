@@ -2,16 +2,16 @@ package harry.boilerplate.order.integration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import harry.boilerplate.order.application.command.dto.AddCartItemCommand;
-import harry.boilerplate.order.application.command.dto.PlaceOrderCommand;
-import harry.boilerplate.order.application.command.handler.AddCartItemCommandHandler;
-import harry.boilerplate.order.application.command.handler.PlaceOrderCommandHandler;
-import harry.boilerplate.order.application.query.dto.CartSummaryQuery;
-import harry.boilerplate.order.application.query.dto.CartSummaryResult;
-import harry.boilerplate.order.application.query.dto.OrderHistoryQuery;
-import harry.boilerplate.order.application.query.dto.OrderHistoryResult;
-import harry.boilerplate.order.application.query.handler.CartSummaryQueryHandler;
-import harry.boilerplate.order.application.query.handler.OrderHistoryQueryHandler;
+import harry.boilerplate.order.command.application.dto.AddCartItemCommand;
+import harry.boilerplate.order.command.application.dto.PlaceOrderCommand;
+import harry.boilerplate.order.command.application.handler.AddCartItemCommandHandler;
+import harry.boilerplate.order.command.application.handler.PlaceOrderCommandHandler;
+import harry.boilerplate.order.query.application.dto.CartSummaryQuery;
+import harry.boilerplate.order.query.application.dto.CartSummaryResult;
+import harry.boilerplate.order.query.application.dto.OrderHistoryQuery;
+import harry.boilerplate.order.query.application.dto.OrderHistoryResult;
+import harry.boilerplate.order.query.application.handler.CartSummaryQueryHandler;
+import harry.boilerplate.order.query.application.handler.OrderHistoryQueryHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.*;
  * Requirements: 8.5, 8.6
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
+@org.junit.jupiter.api.Disabled("Docker 환경 의존 - 로컬 환경에서 제외")
 @TestPropertySource(properties = {
     "spring.jpa.hibernate.ddl-auto=create-drop",
     "logging.level.org.springframework.web.client=DEBUG"

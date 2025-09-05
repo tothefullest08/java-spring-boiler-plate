@@ -33,6 +33,8 @@ dependencies {
     
     // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // WireMock standalone (JRE8) bundles Jetty and avoids NoClassDefFoundError
+    testImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.35.2'
     testImplementation 'org.testcontainers:mysql'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'

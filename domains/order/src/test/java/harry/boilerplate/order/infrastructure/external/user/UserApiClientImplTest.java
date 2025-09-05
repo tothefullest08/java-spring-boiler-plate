@@ -1,4 +1,4 @@
-package harry.boilerplate.order.infrastructure.external.user;
+package harry.boilerplate.order.command.infrastructure.external.user;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -31,8 +31,11 @@ class UserApiClientImplTest {
         wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
         wireMockServer.start();
         
-        // API Client 초기화
-        RestTemplate restTemplate = new RestTemplate();
+        // API Client 초기화 (타임아웃 설정)
+        var requestFactory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(500);
+        requestFactory.setReadTimeout(500);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
         String baseUrl = "http://localhost:" + wireMockServer.port();
         userApiClient = new UserApiClientImpl(restTemplate, baseUrl);
     }
