@@ -1,4 +1,4 @@
-package harry.boilerplate.user.query.application.readmodel;
+package harry.boilerplate.user.query.application.readModel;
 
 /**
  * 사용자 요약 정보 Read Model

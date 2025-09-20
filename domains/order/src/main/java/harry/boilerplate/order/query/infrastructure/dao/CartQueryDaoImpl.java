@@ -1,8 +1,8 @@
 package harry.boilerplate.order.query.infrastructure.dao;
 
-import harry.boilerplate.order.query.application.readmodel.CartItemReadModel;
-import harry.boilerplate.order.query.application.readmodel.CartSummaryReadModel;
-import harry.boilerplate.order.query.application.readmodel.SelectedOptionReadModel;
+import harry.boilerplate.order.query.application.readModel.CartItemReadModel;
+import harry.boilerplate.order.query.application.readModel.CartSummaryReadModel;
+import harry.boilerplate.order.query.application.readModel.SelectedOptionReadModel;
 import harry.boilerplate.order.command.domain.valueObject.CartId;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 import jakarta.persistence.EntityManager;

@@ -7,7 +7,6 @@ import jakarta.persistence.Embeddable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 /**

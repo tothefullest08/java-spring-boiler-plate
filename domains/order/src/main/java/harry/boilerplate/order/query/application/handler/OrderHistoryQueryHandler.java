@@ -2,7 +2,7 @@ package harry.boilerplate.order.query.application.handler;
 
 import harry.boilerplate.order.query.application.dto.OrderHistoryQuery;
 import harry.boilerplate.order.query.application.dto.OrderHistoryResult;
-import harry.boilerplate.order.query.application.readmodel.OrderHistoryReadModel;
+import harry.boilerplate.order.query.application.readModel.OrderHistoryReadModel;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 import harry.boilerplate.order.query.infrastructure.dao.OrderQueryDao;
 import org.springframework.stereotype.Component;

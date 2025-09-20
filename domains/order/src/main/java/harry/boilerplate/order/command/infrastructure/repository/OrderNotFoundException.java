@@ -1,4 +1,4 @@
-package harry.boilerplate.order.command.infrastructure.command;
+package harry.boilerplate.order.command.infrastructure.repository;
 
 import harry.boilerplate.common.exception.ApplicationException;
 import harry.boilerplate.common.exception.CommonSystemErrorCode;

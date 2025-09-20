@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
     "harry.boilerplate.common"
 })
 @EntityScan(basePackages = {
-    "harry.boilerplate.order.domain",
+    "harry.boilerplate.order.command.domain",
     "harry.boilerplate.common.domain"
 })
 public class OrderApplication {

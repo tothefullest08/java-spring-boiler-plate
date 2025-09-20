@@ -1,6 +1,6 @@
 package harry.boilerplate.order.query.infrastructure.dao;
 
-import harry.boilerplate.order.query.application.readmodel.CartSummaryReadModel;
+import harry.boilerplate.order.query.application.readModel.CartSummaryReadModel;
 import harry.boilerplate.order.command.domain.valueObject.CartId;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 

@@ -13,7 +13,13 @@ public abstract class DomainEntity<T extends DomainEntity<T, TID>, TID> extends 
             return false;
         }
         
-        return equals((T) other);
+        if (!(other instanceof DomainEntity)) {
+            return false;
+        }
+        
+        @SuppressWarnings("unchecked")
+        T typedOther = (T) other;
+        return equals(typedOther);
     }
     
     public boolean equals(T other) {

@@ -541,8 +541,8 @@ public class MenuQueryController {
 
 **Before (AS-IS):**
 ```java
-import harry.boilerplate.shop.domain.aggregate.Menu;
-import harry.boilerplate.shop.domain.valueobject.MenuId;
+import harry.boilerplate.shop.command.domain.aggregate.Menu;
+import harry.boilerplate.shop.command.domain.valueobject.MenuId;
 import harry.boilerplate.shop.application.command.handler.CreateMenuCommandHandler;
 import harry.boilerplate.shop.application.query.readmodel.MenuSummaryReadModel;
 import harry.boilerplate.shop.infrastructure.command.MenuRepositoryImpl;

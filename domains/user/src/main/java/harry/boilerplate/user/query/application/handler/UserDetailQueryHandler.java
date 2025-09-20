@@ -2,7 +2,7 @@ package harry.boilerplate.user.query.application.handler;
 
 import harry.boilerplate.user.query.application.dto.UserDetailQuery;
 import harry.boilerplate.user.query.application.dto.UserDetailResult;
-import harry.boilerplate.user.query.application.readmodel.UserDetailReadModel;
+import harry.boilerplate.user.query.application.readModel.UserDetailReadModel;
 import harry.boilerplate.user.query.infrastructure.dao.UserQueryDao;
 
 import org.springframework.stereotype.Component;

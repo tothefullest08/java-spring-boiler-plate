@@ -9,7 +9,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * 메뉴 옵션 값 객체

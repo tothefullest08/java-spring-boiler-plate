@@ -23,9 +23,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;

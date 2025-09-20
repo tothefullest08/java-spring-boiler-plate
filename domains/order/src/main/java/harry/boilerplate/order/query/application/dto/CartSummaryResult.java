@@ -1,6 +1,6 @@
 package harry.boilerplate.order.query.application.dto;
 
-import harry.boilerplate.order.query.application.readmodel.CartSummaryReadModel;
+import harry.boilerplate.order.query.application.readModel.CartSummaryReadModel;
 
 /**
  * 장바구니 요약 조회 결과

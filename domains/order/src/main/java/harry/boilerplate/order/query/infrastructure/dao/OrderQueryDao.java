@@ -1,7 +1,7 @@
 package harry.boilerplate.order.query.infrastructure.dao;
 
-import harry.boilerplate.order.query.application.readmodel.OrderHistoryReadModel;
-import harry.boilerplate.order.query.application.readmodel.OrderSummaryReadModel;
+import harry.boilerplate.order.query.application.readModel.OrderHistoryReadModel;
+import harry.boilerplate.order.query.application.readModel.OrderSummaryReadModel;
 import harry.boilerplate.order.command.domain.valueObject.OrderId;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 

@@ -1,6 +1,6 @@
 package harry.boilerplate.user.query.application.dto;
 
-import harry.boilerplate.user.query.application.readmodel.UserDetailReadModel;
+import harry.boilerplate.user.query.application.readModel.UserDetailReadModel;
 
 /**
  * 사용자 상세 정보 조회 결과 DTO

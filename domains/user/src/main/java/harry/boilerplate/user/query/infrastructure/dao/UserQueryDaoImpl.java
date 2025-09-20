@@ -1,7 +1,7 @@
 package harry.boilerplate.user.query.infrastructure.dao;
 
-import harry.boilerplate.user.query.application.readmodel.UserDetailReadModel;
-import harry.boilerplate.user.query.application.readmodel.UserSummaryReadModel;
+import harry.boilerplate.user.query.application.readModel.UserDetailReadModel;
+import harry.boilerplate.user.query.application.readModel.UserSummaryReadModel;
 import harry.boilerplate.user.command.domain.aggregate.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;

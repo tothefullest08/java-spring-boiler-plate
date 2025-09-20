@@ -1,5 +1,6 @@
 package harry.boilerplate.common.domain.entity;
 
+import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
@@ -9,6 +10,7 @@ import java.util.Objects;
  * 금액을 표현하는 값 객체
  * 불변성과 정확한 계산을 보장
  */
+@Embeddable
 public class Money extends ValueObject {
     
     private final BigDecimal amount;
@@ -23,6 +25,14 @@ public class Money extends ValueObject {
         }
         this.amount = amount.setScale(2, RoundingMode.HALF_UP);
         this.currency = currency;
+    }
+
+    /**
+     * JPA를 위한 기본 생성자
+     */
+    protected Money() {
+        this.amount = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        this.currency = Currency.getInstance("KRW");
     }
     
     public Money(BigDecimal amount) {

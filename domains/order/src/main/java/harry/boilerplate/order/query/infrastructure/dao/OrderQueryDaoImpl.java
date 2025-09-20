@@ -1,6 +1,6 @@
 package harry.boilerplate.order.query.infrastructure.dao;
 
-import harry.boilerplate.order.query.application.readmodel.*;
+import harry.boilerplate.order.query.application.readModel.*;
 import harry.boilerplate.order.command.domain.valueObject.OrderId;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 import jakarta.persistence.EntityManager;

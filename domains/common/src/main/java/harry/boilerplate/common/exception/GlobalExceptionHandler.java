@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,7 +35,7 @@ public class GlobalExceptionHandler {
             ex.getErrorCode().getMessage(),
             request.getRequestURI()
         );
-        
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
     
@@ -100,7 +102,7 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.badRequest().body(errorResponse);
     }
-    
+
     /**
      * IllegalArgumentException 처리
      */
@@ -116,6 +118,44 @@ public class GlobalExceptionHandler {
             request.getRequestURI()
         );
         
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    /**
+     * 지원하지 않는 Content-Type 처리
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException ex, HttpServletRequest request) {
+
+        logger.warn("Unsupported media type: {}", ex.getMessage());
+
+        String message = String.format("Content-Type '%s' is not supported", ex.getContentType());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+            CommonSystemErrorCode.INVALID_REQUEST.getCode(),
+            message,
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(errorResponse);
+    }
+
+    /**
+     * 읽을 수 없는 요청 본문 처리 (잘못된 JSON 등)
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpServletRequest request) {
+
+        logger.warn("HttpMessageNotReadableException occurred: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+            CommonSystemErrorCode.INVALID_REQUEST.getCode(),
+            "Malformed JSON request",
+            request.getRequestURI()
+        );
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
     
@@ -136,4 +176,5 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
 }

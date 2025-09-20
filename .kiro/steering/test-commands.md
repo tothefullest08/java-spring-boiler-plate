@@ -77,10 +77,10 @@
 MenuTest > 메뉴_생성_실패_이름_null() FAILED
     java.lang.AssertionError: 
     Expecting actual throwable to be an instance of:
-      harry.boilerplate.shop.domain.exception.MenuDomainException
+      harry.boilerplate.shop.command.domain.exception.MenuDomainException
     but was:
       java.lang.IllegalArgumentException: 메뉴 이름은 필수입니다
-        at harry.boilerplate.shop.domain.aggregate.Menu.<init>(Menu.java:50)
+        at harry.boilerplate.shop.command.domain.aggregate.Menu.<init>(Menu.java:50)
 ```
 
 ### 3. 빠른 문제 해결

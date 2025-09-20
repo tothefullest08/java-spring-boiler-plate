@@ -1,6 +1,6 @@
 package harry.boilerplate.order.query.application.dto;
 
-import harry.boilerplate.order.query.application.readmodel.OrderHistoryReadModel;
+import harry.boilerplate.order.query.application.readModel.OrderHistoryReadModel;
 
 import java.util.List;
 

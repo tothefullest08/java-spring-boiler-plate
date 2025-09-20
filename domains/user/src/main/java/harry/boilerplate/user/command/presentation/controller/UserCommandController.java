@@ -1,4 +1,4 @@
-package harry.boilerplate.user.command.presentation.command;
+package harry.boilerplate.user.command.presentation.controller;
 
 import harry.boilerplate.common.response.CommandResultResponse;
 import harry.boilerplate.user.command.application.handler.CreateUserCommandHandler;

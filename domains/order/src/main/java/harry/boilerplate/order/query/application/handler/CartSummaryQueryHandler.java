@@ -2,7 +2,7 @@ package harry.boilerplate.order.query.application.handler;
 
 import harry.boilerplate.order.query.application.dto.CartSummaryQuery;
 import harry.boilerplate.order.query.application.dto.CartSummaryResult;
-import harry.boilerplate.order.query.application.readmodel.CartSummaryReadModel;
+import harry.boilerplate.order.query.application.readModel.CartSummaryReadModel;
 import harry.boilerplate.order.command.domain.valueObject.UserId;
 import harry.boilerplate.order.query.infrastructure.dao.CartQueryDao;
 import org.springframework.stereotype.Component;

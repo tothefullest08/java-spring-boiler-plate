@@ -1,4 +1,4 @@
-package harry.boilerplate.user.query.presentation.query;
+package harry.boilerplate.user.query.presentation.controller;
 
 import harry.boilerplate.user.query.application.dto.UserDetailQuery;
 import harry.boilerplate.user.query.application.dto.UserDetailResult;

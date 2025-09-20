@@ -5,6 +5,8 @@ import harry.boilerplate.shop.command.application.dto.CreateMenuCommand;
 import harry.boilerplate.shop.command.domain.aggregate.Menu;
 import harry.boilerplate.shop.command.domain.aggregate.MenuRepository;
 import harry.boilerplate.shop.command.domain.aggregate.ShopRepository;
+import harry.boilerplate.shop.command.domain.exception.ShopDomainException;
+import harry.boilerplate.shop.command.domain.exception.ShopErrorCode;
 import harry.boilerplate.shop.command.domain.valueObject.ShopId;
 
 import org.springframework.stereotype.Component;
@@ -35,7 +37,7 @@ public class CreateMenuCommandHandler {
         // 가게 존재 확인
         ShopId shopId = new ShopId(command.getShopId());
         if (!shopRepository.existsById(shopId)) {
-            throw new IllegalArgumentException("존재하지 않는 가게입니다: " + command.getShopId());
+            throw new ShopDomainException(ShopErrorCode.SHOP_NOT_FOUND, command.getShopId());
         }
         
         // Money 객체 생성

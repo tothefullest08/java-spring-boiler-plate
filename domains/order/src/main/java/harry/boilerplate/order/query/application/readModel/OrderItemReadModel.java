@@ -1,4 +1,4 @@
-package harry.boilerplate.order.query.application.readmodel;
+package harry.boilerplate.order.query.application.readModel;
 
 import java.math.BigDecimal;
 import java.util.List;

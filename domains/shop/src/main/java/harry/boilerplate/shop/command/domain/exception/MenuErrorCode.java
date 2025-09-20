@@ -34,7 +34,7 @@ public enum MenuErrorCode implements ErrorCode {
     NEW_OPTION_NAME_REQUIRED("MENU-DOMAIN-017", "새로운 옵션 이름은 필수입니다"),
     NEW_OPTION_PRICE_REQUIRED("MENU-DOMAIN-018", "새로운 옵션 가격은 필수입니다"),
     CANNOT_DELETE_REQUIRED_OPTION_GROUP("MENU-DOMAIN-019", "필수 옵션그룹은 삭제할 수 없습니다"),
-    MENU_REQUIRED("MENU-DOMAIN-20", "메뉴는 필수입니다"),
+    MENU_REQUIRED("MENU-DOMAIN-020", "메뉴는 필수입니다"),
     OPTION_GROUP_REQUIRED("MENU-DOMAIN-021", "옵션그룹은 필수입니다"),
     OPTION_NOT_FOUND("MENU-DOMAIN-022", "옵션을 찾을 수 없습니다");
  

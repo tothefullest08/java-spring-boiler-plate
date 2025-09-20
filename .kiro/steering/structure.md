@@ -9,73 +9,96 @@
 java-spring-boiler-plate/
 ├── domains/
 │   ├── common/        # 공통 모듈 (아키텍처 패턴)
-│   │   ├── build.gradle
 │   │   └── src/main/java/harry/boilerplate/common/
 │   │       ├── domain/
-│   │       │   ├── entity/        # 기본 엔티티 클래스들
-│   │       │   │   ├── AggregateRoot.java
-│   │       │   │   ├── BaseEntity.java
-│   │       │   │   ├── DomainEntity.java    # 새로 추가
-│   │       │   │   ├── ValueObject.java
-│   │       │   │   ├── EntityId.java
-│   │       │   │   └── Money.java
-│   │       │   └── event/         # 도메인 이벤트 패턴
-│   │       │       └── DomainEvent.java
-│   │       ├── exception/         # 공통 예외 처리
-│   │       ├── response/          # 공통 응답 패턴
-│   │       └── config/            # 공통 설정
+│   │       │   ├── entity/
+│   │       │   └── event/
+│   │       ├── exception/
+│   │       ├── response/
+│   │       └── config/
 │   ├── shop/          # Shop Context 독립 프로젝트
-│   │   ├── build.gradle
-│   │   ├── src/main/java/harry/boilerplate/shop/
-│   │   │   └── domain/
-│   │   │       ├── aggregate/     # 애그리게이트 루트들
-│   │   │       │   ├── Menu.java
-│   │   │       │   ├── Shop.java
-│   │   │       │   ├── MenuRepository.java
-│   │   │       │   ├── ShopRepository.java
-│   │   │       │   ├── MenuDomainException.java
-│   │   │       │   ├── ShopDomainException.java
-│   │   │       │   ├── MenuErrorCode.java
-│   │   │       │   └── ShopErrorCode.java
-│   │   │       ├── entity/        # 도메인 엔티티들
-│   │   │       │   └── OptionGroup.java
-│   │   │       ├── valueobject/   # 값 객체들
-│   │   │       │   ├── MenuId.java
-│   │   │       │   ├── ShopId.java
-│   │   │       │   ├── OptionGroupId.java
-│   │   │       │   ├── Option.java
-│   │   │       │   └── BusinessHours.java
-│   │   │       └── event/         # 도메인 이벤트들
-│   │   │           ├── MenuOpenedEvent.java
-│   │   │           └── ShopClosedEvent.java
-│   │   └── src/main/resources/application-shop.yml
+│   │   └── src/main/java/harry/boilerplate/shop/
+│   │       ├── command/
+│   │       │   ├── domain/
+│   │       │   │   ├── aggregate/
+│   │       │   │   ├── entity/
+│   │       │   │   ├── valueObject/
+│   │       │   │   ├── event/
+│   │       │   │   └── exception/
+│   │       │   ├── application/
+│   │       │   │   ├── handler/
+│   │       │   │   ├── service/
+│   │       │   │   └── dto/
+│   │       │   ├── infrastructure/
+│   │       │   │   ├── repository/
+│   │       │   │   └── external/
+│   │       │   └── presentation/
+│   │       │       ├── controller/
+│   │       │       └── dto/
+│   │       └── query/
+│   │           ├── application/
+│   │           │   ├── handler/
+│   │           │   ├── readModel/
+│   │           │   └── dto/
+│   │           ├── infrastructure/
+│   │           │   ├── dao/
+│   │           │   └── mapper/
+│   │           └── presentation/
+│   │               └── controller/
 │   ├── order/         # Order Context 독립 프로젝트  
-│   │   ├── build.gradle
-│   │   ├── src/main/java/harry/boilerplate/order/
-│   │   │   └── domain/
-│   │   │       ├── aggregate/     # 애그리게이트 루트들
-│   │   │       │   ├── Order.java
-│   │   │       │   ├── Cart.java
-│   │   │       │   ├── OrderDomainException.java
-│   │   │       │   ├── CartDomainException.java
-│   │   │       │   ├── OrderErrorCode.java
-│   │   │       │   └── CartErrorCode.java
-│   │   │       ├── valueobject/   # 값 객체들
-│   │   │       │   ├── OrderId.java
-│   │   │       │   ├── CartId.java
-│   │   │       │   ├── UserId.java
-│   │   │       │   ├── ShopId.java
-│   │   │       │   ├── MenuId.java
-│   │   │       │   ├── OptionId.java
-│   │   │       ├── entity/        # 도메인 엔티티들
-│   │   │       │   ├── OrderLineItem.java
-│   │   │       │   └── CartLineItem.java
-│   │   │       └── event/         # 도메인 이벤트들 (향후 추가)
-│   │   └── src/main/resources/application-order.yml
+│   │   └── src/main/java/harry/boilerplate/order/
+│   │       ├── command/
+│   │       │   ├── domain/
+│   │       │   │   ├── aggregate/
+│   │       │   │   ├── entity/
+│   │       │   │   ├── valueObject/
+│   │       │   │   ├── event/
+│   │       │   │   └── exception/
+│   │       │   ├── application/
+│   │       │   │   ├── handler/
+│   │       │   │   └── dto/
+│   │       │   ├── infrastructure/
+│   │       │   │   ├── repository/
+│   │       │   │   └── external/
+│   │       │   └── presentation/
+│   │       │       ├── controller/
+│   │       │       └── dto/
+│   │       └── query/
+│   │           ├── application/
+│   │           │   ├── handler/
+│   │           │   ├── readModel/
+│   │           │   └── dto/
+│   │           ├── infrastructure/
+│   │           │   ├── dao/
+│   │           │   └── mapper/
+│   │           └── presentation/
+│   │               └── controller/
 │   └── user/          # User Context 독립 프로젝트
-│       ├── build.gradle
-│       ├── src/main/java/harry/boilerplate/user/
-│       └── src/main/resources/application-user.yml
+│       └── src/main/java/harry/boilerplate/user/
+│           ├── command/
+│           │   ├── domain/
+│           │   │   ├── aggregate/
+│           │   │   ├── valueObject/
+│           │   │   ├── event/
+│           │   │   └── exception/
+│           │   ├── application/
+│           │   │   ├── handler/
+│           │   │   └── dto/
+│           │   ├── infrastructure/
+│           │   │   └── repository/
+│           │   └── presentation/
+│           │       ├── controller/
+│           │       └── dto/
+│           └── query/
+│               ├── application/
+│               │   ├── handler/
+│               │   ├── readModel/
+│               │   └── dto/
+│               ├── infrastructure/
+│               │   ├── dao/
+│               │   └── mapper/
+│               └── presentation/
+│                   └── controller/
 └── settings.gradle    # 멀티 프로젝트 설정
 ```
 
@@ -391,7 +414,7 @@ public interface DomainEvent {
 
 #### 각 바운디드 컨텍스트 - 구체적인 비즈니스 이벤트 구현
 ```java
-// ✅ 올바른 위치: domains/order/src/main/java/harry/boilerplate/order/domain/event/OrderPlacedEvent.java
+// ✅ 올바른 위치: domains/order/src/main/java/harry/boilerplate/order/command/domain/event/OrderPlacedEvent.java
 public class OrderPlacedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();
@@ -411,7 +434,7 @@ public class OrderPlacedEvent implements DomainEvent {
     // getters...
 }
 
-// ✅ 올바른 위치: domains/shop/src/main/java/harry/boilerplate/shop/domain/event/MenuOpenedEvent.java
+// ✅ 올바른 위치: domains/shop/src/main/java/harry/boilerplate/shop/command/domain/event/MenuOpenedEvent.java
 public class MenuOpenedEvent implements DomainEvent {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurredAt = Instant.now();
@@ -561,7 +584,7 @@ grep -r "import.*CartLineItem" domains/
 
 # 2. 수정: 각 파일의 import 문을 새 경로로 변경
 # OLD: import harry.boilerplate.order.domain.valueobject.CartLineItem;
-# NEW: import harry.boilerplate.order.domain.entity.CartLineItem;
+# NEW: import harry.boilerplate.order.command.domain.entity.CartLineItem;
 ```
 
 #### 3단계: 컴파일 검증 (필수)

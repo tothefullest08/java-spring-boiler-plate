@@ -4,7 +4,6 @@ import harry.boilerplate.common.domain.entity.DomainEntity;
 import harry.boilerplate.common.domain.entity.Money;
 import harry.boilerplate.order.command.domain.aggregate.Order;
 import harry.boilerplate.order.command.domain.valueObject.MenuId;
-import harry.boilerplate.order.command.domain.valueObject.OptionId;
 import harry.boilerplate.order.command.domain.valueObject.SelectedOption;
 import jakarta.persistence.*;
 

@@ -1,7 +1,7 @@
 package harry.boilerplate.user.query.infrastructure.mapper;
 
-import harry.boilerplate.user.query.application.readmodel.UserDetailReadModel;
-import harry.boilerplate.user.query.application.readmodel.UserSummaryReadModel;
+import harry.boilerplate.user.query.application.readModel.UserDetailReadModel;
+import harry.boilerplate.user.query.application.readModel.UserSummaryReadModel;
 import harry.boilerplate.user.command.domain.aggregate.User;
 import org.springframework.stereotype.Component;
 
